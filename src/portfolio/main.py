@@ -15,6 +15,7 @@ app = FastAPI()
 async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)  
+        
 @app.get("/api/projects", response_model=list[ProjectOut])
 async def get_projects(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Project))
