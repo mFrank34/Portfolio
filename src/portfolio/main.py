@@ -17,7 +17,7 @@ app.include_router(projects.router)
 app.include_router(skills.router)
 app.include_router(blogs.router)
 
-STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "../static")
 
 @app.get("/blog/{slug}")
 async def blog_post_page():
