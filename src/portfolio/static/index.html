@@ -1,69 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Frank's Portfolio</title>
-  <link rel="stylesheet" href="/style.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frank's Portfolio</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"
+    ></script>
+  </head>
 
-  <header>
-    <h1>Frank</h1>
-    <nav>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#blog">Blog</a>
-      <a href="/cv.pdf" target="_blank" rel="noopener">CV</a>
-    </nav>
-  </header>
+  <body>
+    <header>
+      <h1>Frank</h1>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#blog">Blog</a>
+        <a href="/cv.pdf" target="_blank" rel="noopener">CV</a>
+      </nav>
+    </header>
 
-  <!-- PROJECTS -->
-  <section id="projects" x-data="{ projects: [], loading: true }" x-init="
+    <!-- SKILLS -->
+    <section
+      id="skills"
+      x-data="{ skills: [] }"
+      x-init="
+      skills = await (await fetch('/api/skills')).json();
+  "
+    >
+      <h2>Skills</h2>
+      <div class="skills-list">
+        <template x-for="s in skills" :key="s.id">
+          <span class="skill-pill" x-text="s.name"></span>
+        </template>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section
+      id="projects"
+      x-data="{ projects: [], loading: true }"
+      x-init="
       projects = await (await fetch('/api/projects')).json();
       loading = false;
-  ">
-    <h2>Projects</h2>
-    <p x-show="loading">Loading projects...</p>
-    <div class="grid">
-      <template x-for="p in projects" :key="p.id">
-        <div class="card">
-          <h3 x-text="p.title"></h3>
-          <p x-text="p.description"></p>
-          <span class="tag" x-text="p.tech_stack"></span>
-          <a :href="p.url" target="_blank" x-show="p.url">View project →</a>
-        </div>
-      </template>
-    </div>
-  </section>
+  "
+    >
+      <h2>Projects</h2>
+      <p x-show="loading">Loading projects...</p>
+      <div class="grid">
+        <template x-for="p in projects" :key="p.id">
+          <div class="card">
+            <a :href="'/project/' + p.id" x-text="p.title"></a>
+          </div>
+        </template>
+      </div>
+    </section>
 
-  <!-- SKILLS -->
-  <section id="skills" x-data="{ skills: [] }" x-init="
-      skills = await (await fetch('/api/skills')).json();
-  ">
-    <h2>Skills</h2>
-    <div class="skills-list">
-      <template x-for="s in skills" :key="s.id">
-        <span class="skill-pill" x-text="s.name"></span>
-      </template>
-    </div>
-  </section>
-
-  <!-- BLOG -->
-  <section id="blog" x-data="{ posts: [] }" x-init="
+    <!-- BLOG -->
+    <section
+      id="blog"
+      x-data="{ posts: [] }"
+      x-init="
       posts = await (await fetch('/api/blog')).json();
-  ">
-    <h2>Blog</h2>
-    <div class="post-list">
-      <template x-for="post in posts" :key="post.id">
-        <article class="post-preview">
-          <h3 x-text="post.title"></h3>
-          <div x-html="post.content_html"></div>
-        </article>
-      </template>
-    </div>
-  </section>
-
-</body>
+  "
+    >
+      <h2>Blog</h2>
+      <div class="post-list">
+        <template x-for="post in posts" :key="post.id">
+          <article class="post-preview">
+            <a :href="'/blog/' + post.slug" x-text="post.title"></a>
+          </article>
+        </template>
+      </div>
+    </section>
+  </body>
 </html>

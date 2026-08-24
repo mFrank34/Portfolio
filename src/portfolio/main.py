@@ -1,9 +1,10 @@
 import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from portfolio.database import engine, Base
-from portfolio.routers import projects, skills, blog
+from portfolio.routers import blogs, projects, skills
 
 app = FastAPI()
 
@@ -14,7 +15,16 @@ async def startup():
 
 app.include_router(projects.router)
 app.include_router(skills.router)
-app.include_router(blog.router)
+app.include_router(blogs.router)
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+
+@app.get("/blog/{slug}")
+async def blog_post_page():
+    return FileResponse(os.path.join(STATIC_DIR, "blog.html"))
+
+@app.get("/project/{project_id}")
+async def project_page():
+    return FileResponse(os.path.join(STATIC_DIR, "project.html"))
+
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

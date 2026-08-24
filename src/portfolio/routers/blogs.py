@@ -1,5 +1,6 @@
 import os
 import re
+from fastapi.responses import FileResponse
 import markdown
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -81,3 +82,4 @@ async def delete_post(post_id: int, writeKey: str, db: AsyncSession = Depends(ge
     await db.delete(post)
     await db.commit()
     return {"deleted": post_id}
+

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Post</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+</head>
+<body>
+
+  <a href="/">← Back home</a>
+
+  <article x-data="{ post: null, loading: true }" x-init="
+      const slug = window.location.pathname.split('/').pop();
+      const res = await fetch('/api/blog/' + slug);
+      if (res.ok) { post = await res.json(); }
+      loading = false;
+  ">
+    <p x-show="loading">Loading...</p>
+    <template x-if="post">
+      <div>
+        <h1 x-text="post.title"></h1>
+        <div x-html="post.content_html"></div>
+      </div>
+    </template>
+    <p x-show="!loading && !post">Post not found.</p>
+  </article>
+
+</body>
+</html>
