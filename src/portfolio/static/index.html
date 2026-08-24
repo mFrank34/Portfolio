@@ -43,7 +43,7 @@
       id="projects"
       x-data="{ projects: [], loading: true }"
       x-init="
-      projects = await (await fetch('/api/projects')).json();
+      projects = await (await fetch('/api/project')).json();
       loading = false;
   "
     >
@@ -52,7 +52,7 @@
       <div class="grid">
         <template x-for="p in projects" :key="p.id">
           <div class="card">
-            <a :href="'/project/' + p.id" x-text="p.title"></a>
+            <a :href="'/project/' + p.slug" x-text="p.title"></a>
           </div>
         </template>
       </div>
