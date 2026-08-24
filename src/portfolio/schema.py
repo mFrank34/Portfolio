@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime, timezone
 
 class ProjectOut(BaseModel):
     id: int
@@ -35,3 +36,17 @@ class SkillIn(BaseModel):
     category: str | None
     level: str | None
         
+class PostOut(BaseModel):
+    id: int
+    title: str
+    slug: str
+    content_html: str   # rendered, not raw markdown
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class PostIn(BaseModel):
+    writeKey: str
+    title: str
+    content_md: str

@@ -1,10 +1,39 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Environment variables (contains WRITE_KEY, DATABASE_URL, etc.)
+.env
 
-# Virtual environments
-.venv
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+
+# uv
+.uv/
+
+# SQLite database (local dev data — don't commit your actual DB)
+*.db
+*.sqlite
+*.sqlite3
+portfolio.db
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# pytest / coverage (if you add tests later)
+.pytest_cache/
+htmlcov/
+.coverage
