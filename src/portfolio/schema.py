@@ -11,6 +11,7 @@ class ProjectOut(BaseModel):
 
     class Config:
         from_attributes = True
+     
         
 class ProjectIn(BaseModel):
     writeKey: str
@@ -35,6 +36,7 @@ class SkillIn(BaseModel):
     name: str
     category: str | None
     level: str | None
+      
         
 class PostOut(BaseModel):
     id: int
@@ -45,6 +47,7 @@ class PostOut(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class PostIn(BaseModel):
     writeKey: str

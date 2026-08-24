@@ -11,10 +11,12 @@ router = APIRouter(prefix="/api/skills", tags=["skills"])
 
 WRITE_KEY = os.getenv("WRITE_KEY")
 
+
 @router.get("", response_model=list[SkillOut])
 async def list_skills(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Skill))
     return result.scalars().all()
+
 
 @router.post("", response_model=SkillOut)
 async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
@@ -30,6 +32,7 @@ async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(new_skill)
     return new_skill
+
 
 @router.delete("/{skill_id}")
 async def delete_skill(skill_id: int, writeKey: str, db: AsyncSession = Depends(get_db)):
