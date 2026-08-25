@@ -75,6 +75,26 @@ async def list_posts(
     ]
 
 
+@router.get("/{post_id}/raw")
+async def get_post_raw(
+    post_id: int,
+    db: AsyncSession = Depends(get_db),
+    x_write_key: str | None = Header(default=None),
+):
+    # Admin-only: return raw markdown when valid write key provided
+    check_write_key(x_write_key)
+    result = await db.execute(select(Blog).where(Blog.id == post_id))
+    blog = result.scalar_one_or_none()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {
+        "id": blog.id,
+        "title": blog.title,
+        "slug": blog.slug,
+        "content_md": blog.content_md,
+    }
+
+
 @router.get("/{slug}", response_model=BlogOut)
 async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog).where(Blog.slug == slug))
@@ -131,3 +151,39 @@ async def delete_post(
     await db.delete(blog)
     await db.commit()
     return {"deleted": post_id}
+
+
+@router.put("/{post_id}", response_model=BlogOut)
+async def update_blog(
+    post_id: int,
+    payload: BlogIn,
+    db: AsyncSession = Depends(get_db),
+    x_write_key: str | None = Header(default=None),
+):
+    # Accept write key in header X-Write-Key or in payload for backward compatibility
+    check_write_key(x_write_key or payload.writeKey)
+
+    result = await db.execute(select(Blog).where(Blog.id == post_id))
+    blog = result.scalar_one_or_none()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    # Update title and content; if title changed, compute a new unique slug
+    if payload.title and payload.title != blog.title:
+        base_slug = make_slug(payload.title)
+        slug = await get_unique_slug(db, base_slug)
+        blog.slug = slug
+        blog.title = payload.title
+    if payload.content_md is not None:
+        blog.content_md = payload.content_md
+
+    await db.commit()
+    await db.refresh(blog)
+
+    return BlogOut(
+        id=blog.id,
+        title=blog.title,
+        slug=blog.slug,
+        content_html=render_html(blog.content_md),
+        created_at=blog.created_at,
+    )

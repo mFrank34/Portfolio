@@ -1,6 +1,6 @@
 import os
 import re
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -65,3 +65,31 @@ async def delete_project(
     await db.delete(project)
     await db.commit()
     return {"deleted": project_id}
+
+
+@router.put("/{project_id}", response_model=ProjectOut)
+async def update_project(
+    project_id: int,
+    payload: ProjectIn,
+    db: AsyncSession = Depends(get_db),
+    x_write_key: str | None = Header(default=None),
+):
+    provided = x_write_key or payload.writeKey
+    if provided != WRITE_KEY:
+        raise HTTPException(status_code=403, detail="Invalid write key")
+
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if payload.title and payload.title != project.title:
+        setattr(project, "title", payload.title)
+        setattr(project, "slug", make_slug(payload.title))
+        setattr(project, "description", payload.description)
+        setattr(project, "tech_stack", payload.tech_stack)
+        setattr(project, "url", payload.url)
+
+    await db.commit()
+    await db.refresh(project)
+    return project
