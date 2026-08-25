@@ -24,6 +24,13 @@ class Skill(Base):
     level = Column(String(20))
 
 
+class Social(Base):
+    __tablename__ = "socials"
+    id = Column(Integer, primary_key=True)
+    site = Column(String(100), nullable=False)
+    link = Column(String)
+
+
 class Post(Base):
     __tablename__ = "posts"
 
