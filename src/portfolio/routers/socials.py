@@ -7,7 +7,7 @@ from portfolio.database import get_db
 from portfolio.model import Social
 from portfolio.schema.social import SocialOut, SocialIn
 
-router = APIRouter(prefix="api/socials", tags=["socials"])
+router = APIRouter(prefix="/api/socials", tags=["socials"])
 
 WRITE_KEY = os.getenv("WRITE_KEY")
 
