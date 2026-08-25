@@ -27,8 +27,9 @@ class Skill(Base):
 class Social(Base):
     __tablename__ = "socials"
     id = Column(Integer, primary_key=True)
-    site = Column(String(100), nullable=False)
-    link = Column(String)
+    site = Column(String, nullable=False)
+    link = Column(String, nullable=False)
+    icon = Column(String, nullable=False)
 
 
 class Blog(Base):

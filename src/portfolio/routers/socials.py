@@ -23,7 +23,7 @@ async def create_social(payload: SocialIn, db: AsyncSession = Depends(get_db)):
     if payload.writeKey != WRITE_KEY:
         raise HTTPException(status_code=403, detail="Invalid write key")
 
-    new_social = Social(site=payload.site, link=payload.link)
+    new_social = Social(site=payload.site, link=payload.link, icon=payload.icon)
 
     db.add(new_social)
     await db.commit()

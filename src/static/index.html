@@ -20,13 +20,17 @@
     </nav>
   </header>
 
+  <!-- SOCIALS -->
   <section id="socials" x-data="{ socials: [] }" x-init="
-      skills = await (await fetch('/api/socials')).json();
-  ">
+    socials = await (await fetch('/api/socials')).json();
+">
     <h2>Socials</h2>
     <div class="socials-list">
       <template x-for="s in socials" :key="s.id">
-        <span class="socials-pill" x-text="s.name"></span>
+        <a class="socials-pill" :href="s.link" target="_blank" rel="noopener">
+          <img :src="s.icon" :alt="s.site" class="socials-icon" />
+          <span x-text="s.site"></span>
+        </a>
       </template>
     </div>
   </section>
