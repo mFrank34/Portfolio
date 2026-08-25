@@ -42,7 +42,7 @@ class PostOut(BaseModel):
     id: int
     title: str
     slug: str
-    content_html: str   # rendered, not raw markdown
+    content_html: str
     created_at: datetime
 
     class Config:

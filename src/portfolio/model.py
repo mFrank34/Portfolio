@@ -1,4 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.orm import Mapped, mapped_column
+
 from datetime import datetime, timezone
 
 from .database import Base
@@ -21,11 +23,13 @@ class Skill(Base):
     category = Column(String(50))
     level = Column(String(20))
     
-    
 class Post(Base):
     __tablename__ = "posts"
-    id = Column(Integer, primary_key=True)
-    title = Column(String(200), nullable=False)
-    slug = Column(String(200), unique=True, nullable=False)
-    content_md = Column(Text, nullable=False)       # raw markdown, as written
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(200))
+    slug: Mapped[str] = mapped_column(String(200), unique=True)
+    content_md: Mapped[str] = mapped_column(Text)  # raw markdown, as written
+    created_at: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
