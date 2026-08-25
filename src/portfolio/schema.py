@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime, timezone
 
+
 class ProjectOut(BaseModel):
     id: int
     title: str
@@ -11,8 +12,8 @@ class ProjectOut(BaseModel):
 
     class Config:
         from_attributes = True
-     
-        
+
+
 class ProjectIn(BaseModel):
     writeKey: str
     title: str
@@ -29,15 +30,15 @@ class SkillOut(BaseModel):
 
     class Config:
         from_attributes = True
-        
-        
+
+
 class SkillIn(BaseModel):
     writeKey: str
     name: str
     category: str | None
     level: str | None
-      
-        
+
+
 class PostOut(BaseModel):
     id: int
     title: str

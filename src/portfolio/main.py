@@ -10,12 +10,11 @@ app = FastAPI()
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "../static")
 
 
-
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        
+
 
 app.include_router(projects.router)
 app.include_router(skills.router)

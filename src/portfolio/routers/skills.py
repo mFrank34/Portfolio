@@ -35,7 +35,9 @@ async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/{skill_id}")
-async def delete_skill(skill_id: int, writeKey: str, db: AsyncSession = Depends(get_db)):
+async def delete_skill(
+    skill_id: int, writeKey: str, db: AsyncSession = Depends(get_db)
+):
     if writeKey != WRITE_KEY:
         raise HTTPException(status_code=403, detail="Invalid write key")
 

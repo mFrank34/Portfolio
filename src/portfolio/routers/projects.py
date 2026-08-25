@@ -53,7 +53,9 @@ async def create_project(payload: ProjectIn, db: AsyncSession = Depends(get_db))
 
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: int, writeKey: str, db: AsyncSession = Depends(get_db)):
+async def delete_project(
+    project_id: int, writeKey: str, db: AsyncSession = Depends(get_db)
+):
     if writeKey != WRITE_KEY:
         raise HTTPException(status_code=403, detail="Invalid write key")
     result = await db.execute(select(Project).where(Project.id == project_id))

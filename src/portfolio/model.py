@@ -22,7 +22,8 @@ class Skill(Base):
     name = Column(String(100), nullable=False)
     category = Column(String(50))
     level = Column(String(20))
-    
+
+
 class Post(Base):
     __tablename__ = "posts"
 
