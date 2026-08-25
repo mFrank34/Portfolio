@@ -5,11 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frank's Portfolio</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/style.css?v=2" />
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
 </head>
 
-<body>
+<body x-data="{
+  theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+}" x-init="$watch('theme', value => {
+  localStorage.setItem('theme', value);
+  document.documentElement.setAttribute('data-theme', value);
+});
+document.documentElement.setAttribute('data-theme', theme);
+">
   <header>
     <h1>Frank</h1>
     <nav>
@@ -17,6 +24,9 @@
       <a href="#skills">Skills</a>
       <a href="#blog">Blog</a>
       <a href="/cv.pdf" target="_blank" rel="noopener">CV</a>
+      <button @click="theme = theme === 'dark' ? 'light' : 'dark'" aria-label="Toggle theme">
+        <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
+      </button>
     </nav>
   </header>
 
@@ -28,7 +38,8 @@
     <div class="socials-list">
       <template x-for="s in socials" :key="s.id">
         <a class="socials-pill" :href="s.link" target="_blank" rel="noopener">
-          <img :src="s.icon" :alt="s.site" class="socials-icon" />
+          <img :src="`https://cdn.simpleicons.org/${s.site.toLowerCase()}/${theme === 'dark' ? 'ffffff' : '000000'}`"
+            :alt="s.site" class="socials-icon" width="18" height="18" />
           <span x-text="s.site"></span>
         </a>
       </template>
@@ -67,7 +78,7 @@
   <section id="blog" x-data="{ posts: [] }" x-init="
       posts = await (await fetch('/api/blog')).json();
   ">
-    <h2>Blog</h2>
+    <h2>Blogs</h2>
     <div class="post-list">
       <template x-for="post in posts" :key="post.id">
         <article class="post-preview">
