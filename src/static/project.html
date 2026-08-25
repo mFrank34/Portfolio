@@ -1,38 +1,33 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Project</title>
-    <link rel="stylesheet" href="/style.css" />
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"
-    ></script>
-  </head>
-  <body>
-    <a href="/">← Back home</a>
 
-    <article
-      x-data="{ project: null, loading: true }"
-      x-init="
+<head>
+  <meta charset="UTF-8" />
+  <title>Project</title>
+  <link rel="stylesheet" href="/style.css" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+</head>
+
+<body>
+  <a href="/">← Back home</a>
+
+  <article x-data="{ project: null, loading: true }" x-init="
       const slug = window.location.pathname.split('/').pop();
       const res = await fetch('/api/project/' + slug);
       if (res.ok) { project = await res.json(); }
       loading = false;
-  "
-    >
-      <p x-show="loading">Loading...</p>
-      <template x-if="project">
-        <div>
-          <h1 x-text="project.title"></h1>
-          <p x-text="project.description"></p>
-          <span class="tag" x-text="project.tech_stack"></span>
-          <a :href="project.url" x-show="project.url" target="_blank"
-            >Visit →</a
-          >
-        </div>
-      </template>
-      <p x-show="!loading && !project">Project not found.</p>
-    </article>
-  </body>
+  ">
+    <p x-show="loading">Loading...</p>
+    <template x-if="project">
+      <div>
+        <h1 x-text="project.title"></h1>
+        <p x-text="project.description"></p>
+        <span class="tag" x-text="project.tech_stack"></span>
+        <a :href="project.url" x-show="project.url" target="_blank">Visit →</a>
+      </div>
+    </template>
+    <p x-show="!loading && !project">Project not found.</p>
+  </article>
+</body>
+
 </html>
