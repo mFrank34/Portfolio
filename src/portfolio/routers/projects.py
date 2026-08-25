@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from portfolio.database import get_db
 from portfolio.model import Project
-from portfolio.schema import ProjectOut, ProjectIn
+from portfolio.schema.project import ProjectOut, ProjectIn
 
 router = APIRouter(prefix="/api/project", tags=["projects"])
 

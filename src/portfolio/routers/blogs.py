@@ -9,8 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.database import get_db
-from portfolio.model import Post
-from portfolio.schema import PostIn, PostOut
+from portfolio.model import Blog
+from portfolio.schema.blog import BlogIn, BlogOut
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
 
@@ -45,14 +45,14 @@ async def get_unique_slug(db: AsyncSession, base_slug: str) -> str:
     slug = base_slug
     suffix = 1
     while True:
-        result = await db.execute(select(Post.id).where(Post.slug == slug))
+        result = await db.execute(select(Blog.id).where(Blog.slug == slug))
         if result.scalar_one_or_none() is None:
             return slug
         suffix += 1
         slug = f"{base_slug}-{suffix}"
 
 
-@router.get("", response_model=list[PostOut])
+@router.get("", response_model=list[BlogOut])
 async def list_posts(
     db: AsyncSession = Depends(get_db),
     limit: int = 20,
@@ -60,11 +60,11 @@ async def list_posts(
 ):
     limit = max(1, min(limit, 100))
     result = await db.execute(
-        select(Post).order_by(Post.created_at.desc()).limit(limit).offset(offset)
+        select(Blog).order_by(Blog.created_at.desc()).limit(limit).offset(offset)
     )
     posts = result.scalars().all()
     return [
-        PostOut(
+        BlogOut(
             id=p.id,
             title=p.title,
             slug=p.slug,
@@ -75,43 +75,43 @@ async def list_posts(
     ]
 
 
-@router.get("/{slug}", response_model=PostOut)
+@router.get("/{slug}", response_model=BlogOut)
 async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Post).where(Post.slug == slug))
-    post = result.scalar_one_or_none()
-    if not post:
+    result = await db.execute(select(Blog).where(Blog.slug == slug))
+    blog = result.scalar_one_or_none()
+    if not blog:
         raise HTTPException(status_code=404, detail="Post not found")
-    return PostOut(
-        id=post.id,
-        title=post.title,
-        slug=post.slug,
-        content_html=render_html(post.content_md),
-        created_at=post.created_at,
+    return BlogOut(
+        id=blog.id,
+        title=blog.title,
+        slug=blog.slug,
+        content_html=render_html(blog.content_md),
+        created_at=blog.created_at,
     )
 
 
-@router.post("", response_model=PostOut)
-async def create_post(payload: PostIn, db: AsyncSession = Depends(get_db)):
+@router.post("", response_model=BlogOut)
+async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
     check_write_key(payload.writeKey)
 
     base_slug = make_slug(payload.title)
     slug = await get_unique_slug(db, base_slug)
 
-    new_post = Post(
+    new_blog = Blog(
         title=payload.title,
         slug=slug,
         content_md=payload.content_md,
     )
-    db.add(new_post)
+    db.add(new_blog)
     await db.commit()
-    await db.refresh(new_post)
+    await db.refresh(new_blog)
 
-    return PostOut(
-        id=new_post.id,
-        title=new_post.title,
-        slug=new_post.slug,
-        content_html=render_html(new_post.content_md),
-        created_at=new_post.created_at,
+    return BlogOut(
+        id=new_blog.id,
+        title=new_blog.title,
+        slug=new_blog.slug,
+        content_html=render_html(new_blog.content_md),
+        created_at=new_blog.created_at,
     )
 
 
@@ -123,11 +123,11 @@ async def delete_post(
 ):
     check_write_key(x_write_key)
 
-    result = await db.execute(select(Post).where(Post.id == post_id))
-    post = result.scalar_one_or_none()
-    if not post:
+    result = await db.execute(select(Blog).where(Blog.id == post_id))
+    blog = result.scalar_one_or_none()
+    if not blog:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    await db.delete(post)
+    await db.delete(blog)
     await db.commit()
     return {"deleted": post_id}

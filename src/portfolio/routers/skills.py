@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from portfolio.database import get_db
 from portfolio.model import Skill
-from portfolio.schema import SkillOut, SkillIn
+from portfolio.schema.skill import SkillOut, SkillIn
 
 router = APIRouter(prefix="/api/skills", tags=["skills"])
 

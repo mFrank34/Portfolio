@@ -31,7 +31,7 @@ class Social(Base):
     link = Column(String)
 
 
-class Post(Base):
+class Blog(Base):
     __tablename__ = "posts"
 
     id: Mapped[int] = mapped_column(primary_key=True)

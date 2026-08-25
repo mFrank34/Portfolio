@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from portfolio.database import get_db
 from portfolio.model import Social
-from portfolio.schema import SocialOut, SocialIn
+from portfolio.schema.social import SocialOut, SocialIn
 
 router = APIRouter(prefix="api/socials", tags=["socials"])
 
