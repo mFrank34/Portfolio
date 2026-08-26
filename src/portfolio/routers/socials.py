@@ -25,7 +25,10 @@ async def create_social(payload: SocialIn, db: AsyncSession = Depends(get_db)):
     await db.refresh(new_social)
     return new_social
 
-@router.put("/{social_id}", response_model=SocialOut, dependencies=[Depends(require_write_key)])
+
+@router.put(
+    "/{social_id}", response_model=SocialOut, dependencies=[Depends(require_write_key)]
+)
 async def update_social(
     social_id: int,
     payload: SocialIn,
@@ -35,14 +38,13 @@ async def update_social(
     social = result.scalar_one_or_none()
     if not social:
         raise HTTPException(status_code=404, detail="Social not found")
-    
-    if payload.site and payload.site != social.site:
-        setattr(social, "site", payload.site)
-        setattr(social, "link", payload.link)
-        setattr(social, "icon", payload.icon)
-        
+
+    social.site = payload.site
+    social.link = payload.link
+    social.icon = payload.icon
+
     await db.commit()
-    await db.refresh()
+    await db.refresh(social)
     return social
 
 

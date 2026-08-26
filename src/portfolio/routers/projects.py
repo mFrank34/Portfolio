@@ -1,16 +1,15 @@
-import os
 import re
-from fastapi import APIRouter, Depends, HTTPException, Header
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from portfolio.auth import require_write_key
 from portfolio.database import get_db
 from portfolio.model import Project
-from portfolio.schema.project import ProjectOut, ProjectIn
+from portfolio.schema.project import ProjectIn, ProjectOut
 
 router = APIRouter(prefix="/api/project", tags=["projects"])
-
-WRITE_KEY = os.getenv("WRITE_KEY")
 
 
 def make_slug(title: str) -> str:
@@ -34,11 +33,8 @@ async def get_project(slug: str, db: AsyncSession = Depends(get_db)):
     return project
 
 
-@router.post("", response_model=ProjectOut)
+@router.post("", response_model=ProjectOut, dependencies=[Depends(require_write_key)])
 async def create_project(payload: ProjectIn, db: AsyncSession = Depends(get_db)):
-    if payload.writeKey != WRITE_KEY:
-        raise HTTPException(status_code=403, detail="Invalid write key")
-
     new_project = Project(
         title=payload.title,
         slug=make_slug(payload.title),
@@ -46,50 +42,44 @@ async def create_project(payload: ProjectIn, db: AsyncSession = Depends(get_db))
         tech_stack=payload.tech_stack,
         url=payload.url,
     )
+
     db.add(new_project)
     await db.commit()
     await db.refresh(new_project)
     return new_project
 
 
-@router.delete("/{project_id}")
-async def delete_project(
-    project_id: int, writeKey: str, db: AsyncSession = Depends(get_db)
-):
-    if writeKey != WRITE_KEY:
-        raise HTTPException(status_code=403, detail="Invalid write key")
-    result = await db.execute(select(Project).where(Project.id == project_id))
-    project = result.scalar_one_or_none()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-    await db.delete(project)
-    await db.commit()
-    return {"deleted": project_id}
-
-
-@router.put("/{project_id}", response_model=ProjectOut)
+@router.put(
+    "/{project_id}",
+    response_model=ProjectOut,
+    dependencies=[Depends(require_write_key)],
+)
 async def update_project(
-    project_id: int,
-    payload: ProjectIn,
-    db: AsyncSession = Depends(get_db),
-    x_write_key: str | None = Header(default=None),
+    project_id: int, payload: ProjectIn, db: AsyncSession = Depends(get_db)
 ):
-    provided = x_write_key or payload.writeKey
-    if provided != WRITE_KEY:
-        raise HTTPException(status_code=403, detail="Invalid write key")
-
     result = await db.execute(select(Project).where(Project.id == project_id))
     project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    if payload.title and payload.title != project.title:
-        setattr(project, "title", payload.title)
-        setattr(project, "slug", make_slug(payload.title))
-        setattr(project, "description", payload.description)
-        setattr(project, "tech_stack", payload.tech_stack)
-        setattr(project, "url", payload.url)
+    project.title = payload.title
+    project.slug = make_slug(payload.title)
+    project.description = payload.description
+    project.tech_stack = payload.tech_stack
+    project.url = payload.url
 
     await db.commit()
     await db.refresh(project)
     return project
+
+
+@router.delete("/{project_id}", dependencies=[Depends(require_write_key)])
+async def delete_project(project_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    await db.delete(project)
+    await db.commit()
+    return {"deleted": project_id}

@@ -30,22 +30,23 @@ async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
     return new_skill
 
 
-@router.put("/{skill_id}", response_class=SkillOut, dependencies=[Depends(get_db)])
+@router.put(
+    "/{skill_id}", response_model=SkillOut, dependencies=[Depends(require_write_key)]
+)
 async def update_skill(
-    skill_id: int, payload, skillIn, db: AsyncSession = Depends(get_db)
+    skill_id: int, payload: SkillIn, db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(select(Skill).where(Skill.id == skill_id))
     skill = result.scalar_one_or_none()
     if not skill:
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    if payload.name and payload.name != skill.name:
-        setattr(skill, "name", payload.name)
-        setattr(skill, "category", payload.category)
-        setattr(skill, "level", payload.level)
+    skill.name = payload.name
+    skill.category = payload.category
+    skill.level = payload.level
 
     await db.commit()
-    await db.refresh(Skill)
+    await db.refresh(skill)
     return skill
 
 

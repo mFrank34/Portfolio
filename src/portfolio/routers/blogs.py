@@ -1,23 +1,17 @@
-import hmac
-import os
 import re
 
 import bleach
 import markdown
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from portfolio.auth import require_write_key
 from portfolio.database import get_db
 from portfolio.model import Blog
 from portfolio.schema.blog import BlogIn, BlogOut
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
-
-try:
-    WRITE_KEY: str = os.environ["WRITE_KEY"]
-except KeyError as exc:
-    raise RuntimeError("WRITE_KEY environment variable must be set") from exc
 
 ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS.union(
     {"p", "pre", "h1", "h2", "h3", "h4", "img", "br", "hr", "span"}
@@ -34,11 +28,6 @@ def make_slug(title: str) -> str:
 def render_html(content_md: str) -> str:
     raw_html = markdown.markdown(content_md)
     return bleach.clean(raw_html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
-
-
-def check_write_key(provided: str | None) -> None:
-    if not provided or not hmac.compare_digest(provided, WRITE_KEY):
-        raise HTTPException(status_code=403, detail="Invalid write key")
 
 
 async def get_unique_slug(db: AsyncSession, base_slug: str) -> str:
@@ -75,14 +64,8 @@ async def list_posts(
     ]
 
 
-@router.get("/{post_id}/raw")
-async def get_post_raw(
-    post_id: int,
-    db: AsyncSession = Depends(get_db),
-    x_write_key: str | None = Header(default=None),
-):
-    # Admin-only: return raw markdown when valid write key provided
-    check_write_key(x_write_key)
+@router.get("/{post_id}/raw", dependencies=[Depends(require_write_key)])
+async def get_post_raw(post_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog).where(Blog.id == post_id))
     blog = result.scalar_one_or_none()
     if not blog:
@@ -110,10 +93,8 @@ async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.post("", response_model=BlogOut)
+@router.post("", response_model=BlogOut, dependencies=[Depends(require_write_key)])
 async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
-    check_write_key(payload.writeKey)
-
     base_slug = make_slug(payload.title)
     slug = await get_unique_slug(db, base_slug)
 
@@ -135,14 +116,8 @@ async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.delete("/{post_id}")
-async def delete_post(
-    post_id: int,
-    db: AsyncSession = Depends(get_db),
-    x_write_key: str | None = Header(default=None),
-):
-    check_write_key(x_write_key)
-
+@router.delete("/{post_id}", dependencies=[Depends(require_write_key)])
+async def delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog).where(Blog.id == post_id))
     blog = result.scalar_one_or_none()
     if not blog:
@@ -153,16 +128,12 @@ async def delete_post(
     return {"deleted": post_id}
 
 
-@router.put("/{post_id}", response_model=BlogOut)
+@router.put(
+    "/{post_id}", response_model=BlogOut, dependencies=[Depends(require_write_key)]
+)
 async def update_blog(
-    post_id: int,
-    payload: BlogIn,
-    db: AsyncSession = Depends(get_db),
-    x_write_key: str | None = Header(default=None),
+    post_id: int, payload: BlogIn, db: AsyncSession = Depends(get_db)
 ):
-    # Accept write key in header X-Write-Key or in payload for backward compatibility
-    check_write_key(x_write_key or payload.writeKey)
-
     result = await db.execute(select(Blog).where(Blog.id == post_id))
     blog = result.scalar_one_or_none()
     if not blog:
