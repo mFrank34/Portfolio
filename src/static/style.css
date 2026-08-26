@@ -12,6 +12,11 @@
   --nav-text: #333333;
   --link: #2563eb;
   --link-hover: #1d4ed8;
+  --input-bg: #ffffff;
+  --success: #0a0;
+  --error: #a00;
+  --active-bg: #222222;
+  --active-text: #ffffff;
 }
 
 [data-theme="dark"] {
@@ -24,6 +29,11 @@
   --nav-text: #cccccc;
   --link: #6ea8fe;
   --link-hover: #9dc4ff;
+  --input-bg: #222222;
+  --success: #4ade80;
+  --error: #f87171;
+  --active-bg: #e8e8e8;
+  --active-text: #181818;
 }
 
 body {
@@ -178,4 +188,116 @@ h2 {
   height: 18px;
   flex-shrink: 0;
   display: block;
+}
+
+/* ---------- Editor page ---------- */
+
+body.editor {
+  max-width: 900px;
+  padding: 1rem;
+}
+
+body.editor header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+body.editor main {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+body.editor label {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+body.editor input[type="text"],
+body.editor input[type="url"],
+body.editor input[type="password"],
+body.editor textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+body.editor .tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+body.editor .tabs button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+body.editor .tabs button.active {
+  background: var(--active-bg);
+  color: var(--active-text);
+  border-color: var(--active-bg);
+}
+
+body.editor .actions {
+  margin-top: 0.5rem;
+}
+
+body.editor .status {
+  margin-top: 0.5rem;
+}
+
+body.editor .status.success {
+  color: var(--success);
+}
+
+body.editor .status.error {
+  color: var(--error);
+}
+
+body.editor .preview {
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+body.editor .manage-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+body.editor .manage-item {
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+body.editor .manage-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+body.editor .manage-actions button {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text);
+  cursor: pointer;
 }
