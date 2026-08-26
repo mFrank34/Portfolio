@@ -5,11 +5,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Editor — Admin</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css" />
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
   <!-- Markdown renderer and sanitizer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="editor.js"></script>
 </head>
 
 <body class="editor" x-data="editor()">
@@ -131,78 +132,5 @@
     </section>
 
   </main>
-
-  <style>
-    /* Minimal scoped styles for editor */
-    body.editor {
-      font-family: system-ui, Arial, sans-serif;
-      padding: 1rem;
-    }
-
-    header {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem
-    }
-
-    main {
-      max-width: 900px;
-      margin: 0 auto
-    }
-
-    label {
-      display: block;
-      margin: 0.5rem 0
-    }
-
-    input[type="text"],
-    input[type="url"],
-    input[type="password"],
-    textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px
-    }
-
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem
-    }
-
-    .tabs button {
-      padding: 0.4rem 0.8rem
-    }
-
-    .tabs button.active {
-      background: #222;
-      color: #fff
-    }
-
-    .actions {
-      margin-top: 0.5rem
-    }
-
-    .status {
-      margin-top: 0.5rem
-    }
-
-    .status.success {
-      color: #0a0
-    }
-
-    .status.error {
-      color: #a00
-    }
-
-    .preview {
-      border-top: 1px solid #eee;
-      margin-top: 1rem;
-      padding-top: 1rem
-    }
-  </style>
-</body>
 
 </html>
