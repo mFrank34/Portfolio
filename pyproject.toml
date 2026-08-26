@@ -10,6 +10,8 @@ requires-python = ">=3.14"
 dependencies = [
     "aiosqlite>=0.22.1",
     "asyncmy>=0.2.14",
+    "asyncpg>=0.31.0",
+    "bleach>=6.4.0",
     "fastapi>=0.141.1",
     "markdown>=3.10.3",
     "python-dotenv>=1.2.3",
