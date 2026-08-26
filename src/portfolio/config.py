@@ -5,6 +5,7 @@ from pydantic import Field
 class Settings(BaseSettings):
     write_key: str
     database_url: str = "sqlite:///./site.db"
+    sql_echo: bool = False
     cors_origins: list[str] = ["http://localhost:8000"]
     environment: str = "development"
 
