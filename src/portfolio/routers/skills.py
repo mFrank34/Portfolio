@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from portfolio.auth import require_write_key
+from portfolio.auth import require_key
 from portfolio.database import get_db
 from portfolio.model import Skill
 from portfolio.schema.skill import SkillIn, SkillOut
@@ -16,7 +16,7 @@ async def list_skills(db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
-@router.post("", response_model=SkillOut, dependencies=[Depends(require_write_key)])
+@router.post("", response_model=SkillOut, dependencies=[Depends(require_key)])
 async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
     new_skill = Skill(
         name=payload.name,
@@ -31,7 +31,7 @@ async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
 
 
 @router.put(
-    "/{skill_id}", response_model=SkillOut, dependencies=[Depends(require_write_key)]
+    "/{skill_id}", response_model=SkillOut, dependencies=[Depends(require_key)]
 )
 async def update_skill(
     skill_id: int, payload: SkillIn, db: AsyncSession = Depends(get_db)
@@ -50,7 +50,7 @@ async def update_skill(
     return skill
 
 
-@router.delete("/{skill_id}", dependencies=[Depends(require_write_key)])
+@router.delete("/{skill_id}", dependencies=[Depends(require_key)])
 async def delete_skill(skill_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Skill).where(Skill.id == skill_id))
     skill = result.scalar_one_or_none()

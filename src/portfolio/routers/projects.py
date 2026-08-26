@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from portfolio.auth import require_write_key
+from portfolio.auth import require_key
 from portfolio.database import get_db
 from portfolio.model import Project
 from portfolio.schema.project import ProjectIn, ProjectOut
@@ -33,7 +33,7 @@ async def get_project(slug: str, db: AsyncSession = Depends(get_db)):
     return project
 
 
-@router.post("", response_model=ProjectOut, dependencies=[Depends(require_write_key)])
+@router.post("", response_model=ProjectOut, dependencies=[Depends(require_key)])
 async def create_project(payload: ProjectIn, db: AsyncSession = Depends(get_db)):
     new_project = Project(
         title=payload.title,
@@ -52,7 +52,7 @@ async def create_project(payload: ProjectIn, db: AsyncSession = Depends(get_db))
 @router.put(
     "/{project_id}",
     response_model=ProjectOut,
-    dependencies=[Depends(require_write_key)],
+    dependencies=[Depends(require_key)],
 )
 async def update_project(
     project_id: int, payload: ProjectIn, db: AsyncSession = Depends(get_db)
@@ -73,7 +73,7 @@ async def update_project(
     return project
 
 
-@router.delete("/{project_id}", dependencies=[Depends(require_write_key)])
+@router.delete("/{project_id}", dependencies=[Depends(require_key)])
 async def delete_project(project_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Project).where(Project.id == project_id))
     project = result.scalar_one_or_none()
