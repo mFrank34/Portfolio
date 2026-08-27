@@ -1,7 +1,3 @@
-import re
-
-import bleach
-import markdown
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,18 +7,9 @@ from portfolio.database import get_db
 from portfolio.model.blog import Blog
 from portfolio.schema.blog import BlogIn, BlogOut
 from portfolio.shared.slug import make_slug
+from portfolio.shared.render import render_html
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
-
-ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS.union(
-    {"p", "pre", "h1", "h2", "h3", "h4", "img", "br", "hr", "span"}
-)
-ALLOWED_ATTRS = {**bleach.sanitizer.ALLOWED_ATTRIBUTES, "img": ["src", "alt", "title"]}
-
-
-def render_html(content_md: str) -> str:
-    raw_html = markdown.markdown(content_md)
-    return bleach.clean(raw_html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
 
 
 async def get_unique_slug(db: AsyncSession, base_slug: str) -> str:
