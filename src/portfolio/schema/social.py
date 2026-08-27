@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class SocialIn(BaseModel):
-    writeKey: str
     site: str
     link: str
     icon: str

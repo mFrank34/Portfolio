@@ -14,6 +14,5 @@ class BlogOut(BaseModel):
 
 
 class BlogIn(BaseModel):
-    writeKey: str
     title: str
     content_md: str

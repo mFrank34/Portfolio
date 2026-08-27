@@ -13,7 +13,6 @@ class ProjectOut(BaseModel):
 
 
 class ProjectIn(BaseModel):
-    writeKey: str
     title: str
     description: str | None
     tech_stack: str | None

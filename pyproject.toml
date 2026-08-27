@@ -14,6 +14,7 @@ dependencies = [
     "bleach>=6.4.0",
     "fastapi>=0.141.1",
     "markdown>=3.10.3",
+    "pydantic-settings>=2.15.0",
     "python-dotenv>=1.2.3",
     "sqlalchemy>=2.0.52",
     "uvicorn[standard]>=0.52.4",

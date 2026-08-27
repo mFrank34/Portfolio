@@ -12,7 +12,6 @@ class SkillOut(BaseModel):
 
 
 class SkillIn(BaseModel):
-    writeKey: str
     name: str
     category: str | None
     level: str | None

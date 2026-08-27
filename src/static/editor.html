@@ -17,6 +17,9 @@
   <header>
     <a href="/">← Back home</a>
     <h1>Content Editor</h1>
+    <button @click="toggleTheme" aria-label="Toggle theme">
+      <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
+    </button>
   </header>
 
   <main>
@@ -132,5 +135,7 @@
     </section>
 
   </main>
+
+</body>
 
 </html>
