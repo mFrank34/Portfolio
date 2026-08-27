@@ -6,16 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.auth import require_key
 from portfolio.database import get_db
-from portfolio.model import Project
+from portfolio.model.project import Project
 from portfolio.schema.project import ProjectIn, ProjectOut
+from portfolio.shared.slug import make_slug
 
 router = APIRouter(prefix="/api/project", tags=["projects"])
-
-
-def make_slug(title: str) -> str:
-    slug = title.lower().strip()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
-    return slug
 
 
 @router.get("", response_model=list[ProjectOut])
@@ -62,11 +57,17 @@ async def update_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project.title = payload.title # pyright: ignore[reportAttributeAccessIssue]
-    project.slug = make_slug(payload.title) # pyright: ignore[reportAttributeAccessIssue]
-    project.description = payload.description # pyright: ignore[reportAttributeAccessIssue]
-    project.tech_stack = payload.tech_stack # pyright: ignore[reportAttributeAccessIssue]
-    project.url = payload.url # pyright: ignore[reportAttributeAccessIssue]
+    project.title = payload.title  # pyright: ignore[reportAttributeAccessIssue]
+    project.slug = make_slug(
+        payload.title
+    )  # pyright: ignore[reportAttributeAccessIssue]
+    project.description = (
+        payload.description
+    )  # pyright: ignore[reportAttributeAccessIssue]
+    project.tech_stack = (
+        payload.tech_stack
+    )  # pyright: ignore[reportAttributeAccessIssue]
+    project.url = payload.url  # pyright: ignore[reportAttributeAccessIssue]
 
     await db.commit()
     await db.refresh(project)

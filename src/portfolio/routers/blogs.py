@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.auth import require_key
 from portfolio.database import get_db
-from portfolio.model import Blog
+from portfolio.model.blog import Blog
 from portfolio.schema.blog import BlogIn, BlogOut
+from portfolio.shared.slug import make_slug
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
 
@@ -17,12 +18,6 @@ ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS.union(
     {"p", "pre", "h1", "h2", "h3", "h4", "img", "br", "hr", "span"}
 )
 ALLOWED_ATTRS = {**bleach.sanitizer.ALLOWED_ATTRIBUTES, "img": ["src", "alt", "title"]}
-
-
-def make_slug(title: str) -> str:
-    slug = title.lower().strip()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
-    return slug or "post"
 
 
 def render_html(content_md: str) -> str:

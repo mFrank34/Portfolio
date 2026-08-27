@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.auth import require_key
 from portfolio.database import get_db
-from portfolio.model import Social
+from portfolio.model.social import Social
 from portfolio.schema.social import SocialIn, SocialOut
 
 router = APIRouter(prefix="/api/socials", tags=["socials"])
@@ -39,9 +39,9 @@ async def update_social(
     if not social:
         raise HTTPException(status_code=404, detail="Social not found")
 
-    social.site = payload.site
-    social.link = payload.link
-    social.icon = payload.icon
+    social.site = payload.site # pyright: ignore[reportAttributeAccessIssue]
+    social.link = payload.link # pyright: ignore[reportAttributeAccessIssue]
+    social.icon = payload.icon # pyright: ignore[reportAttributeAccessIssue]
 
     await db.commit()
     await db.refresh(social)

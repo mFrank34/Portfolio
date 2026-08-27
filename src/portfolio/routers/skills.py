@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.auth import require_key
 from portfolio.database import get_db
-from portfolio.model import Skill
+from portfolio.model.skill import Skill
 from portfolio.schema.skill import SkillIn, SkillOut
 
 router = APIRouter(prefix="/api/skills", tags=["skills"])
@@ -30,9 +30,7 @@ async def create_skill(payload: SkillIn, db: AsyncSession = Depends(get_db)):
     return new_skill
 
 
-@router.put(
-    "/{skill_id}", response_model=SkillOut, dependencies=[Depends(require_key)]
-)
+@router.put("/{skill_id}", response_model=SkillOut, dependencies=[Depends(require_key)])
 async def update_skill(
     skill_id: int, payload: SkillIn, db: AsyncSession = Depends(get_db)
 ):
@@ -41,9 +39,9 @@ async def update_skill(
     if not skill:
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    skill.name = payload.name
-    skill.category = payload.category
-    skill.level = payload.level
+    skill.name = payload.name  # pyright: ignore[reportAttributeAccessIssue]
+    skill.category = payload.category  # pyright: ignore[reportAttributeAccessIssue]
+    skill.level = payload.level  # pyright: ignore[reportAttributeAccessIssue]
 
     await db.commit()
     await db.refresh(skill)
