@@ -11,19 +11,12 @@
     })();
   </script>
   <link rel="stylesheet" href="/style.css">
+  <script src="/theme.js"></script>
+  <script src="/blog.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
-  <script defer src="/theme.js"></script>
 </head>
 
-<body x-data="{ ...themeMixin(), post: null, loading: true }" x-init="
-  initTheme();
-  (async () => {
-    const slug = window.location.pathname.split('/').filter(Boolean).pop();
-    const res = await fetch('/api/blog/' + slug);
-    if (res.ok) { post = await res.json(); }
-    loading = false;
-  })();
-">
+<body x-data="blogPostApp()">
   <header>
     <a href="/">← Back home</a>
   </header>

@@ -11,17 +11,12 @@
     })();
   </script>
   <link rel="stylesheet" href="/style.css" />
-  <script defer src="/theme.js"></script>
+  <script src="/theme.js"></script>
+  <script src="/project.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
 </head>
 
-<body x-data="{ ...themeMixin(), project: null, loading: true }" x-init="
-  initTheme();
-  const slug = window.location.pathname.split('/').pop();
-  const res = await fetch('/api/project/' + slug);
-  if (res.ok) { project = await res.json(); }
-  loading = false;
-">
+<body x-data="projectApp()">
   <header>
     <a href="/">← Back home</a>
   </header>
