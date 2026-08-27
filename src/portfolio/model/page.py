@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from portfolio.database import Base
 
 
-class Blog(Base):
+class Page(Base):
     __tablename__ = "page"
 
     id: Mapped[int] = mapped_column(primary_key=True)
