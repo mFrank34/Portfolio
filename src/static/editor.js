@@ -1,5 +1,8 @@
 function editor() {
     return {
+        // ---------- theme (shared, see theme.js) ----------
+        ...themeMixin(),
+
         // ---------- state ----------
         tab: 'blog',
         writeKey: '',
@@ -22,26 +25,8 @@ function editor() {
         editingBlogId: null,
         editingProjectId: null,
 
-        // ---------- theme ----------
-        theme: localStorage.getItem('theme')
-            || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-
         init() {
-            document.documentElement.setAttribute('data-theme', this.theme);
-            this.$watch('theme', (value) => {
-                localStorage.setItem('theme', value);
-                document.documentElement.setAttribute('data-theme', value);
-            });
-            // Keep in sync if the theme is changed in another tab
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'theme' && e.newValue) {
-                    this.theme = e.newValue;
-                }
-            });
-        },
-
-        toggleTheme() {
-            this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            this.initTheme();
         },
 
         // ---------- computed ----------

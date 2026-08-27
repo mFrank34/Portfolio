@@ -6,17 +6,24 @@
   <title>Project</title>
   <link rel="stylesheet" href="/style.css" />
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+  <script defer src="theme.js"></script>
 </head>
 
-<body>
-  <a href="/">← Back home</a>
+<body x-data="{ ...themeMixin(), project: null, loading: true }" x-init="
+  initTheme();
+  const slug = window.location.pathname.split('/').pop();
+  const res = await fetch('/api/project/' + slug);
+  if (res.ok) { project = await res.json(); }
+  loading = false;
+">
+  <header>
+    <a href="/">← Back home</a>
+    <button @click="toggleTheme" aria-label="Toggle theme">
+      <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
+    </button>
+  </header>
 
-  <article x-data="{ project: null, loading: true }" x-init="
-      const slug = window.location.pathname.split('/').pop();
-      const res = await fetch('/api/project/' + slug);
-      if (res.ok) { project = await res.json(); }
-      loading = false;
-  ">
+  <article>
     <p x-show="loading">Loading...</p>
     <template x-if="project">
       <div>

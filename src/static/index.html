@@ -7,16 +7,10 @@
   <title>Frank's Portfolio</title>
   <link rel="stylesheet" href="/style.css?v=2" />
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+  <script defer src="theme.js"></script>
 </head>
 
-<body x-data="{
-  theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-}" x-init="$watch('theme', value => {
-  localStorage.setItem('theme', value);
-  document.documentElement.setAttribute('data-theme', value);
-});
-document.documentElement.setAttribute('data-theme', theme);
-">
+<body x-data="{ ...themeMixin() }" x-init="initTheme()">
   <header>
     <h1>Frank</h1>
     <nav>
@@ -25,7 +19,7 @@ document.documentElement.setAttribute('data-theme', theme);
       <a href="#blog">Blog</a>
       <a href="/cv.pdf" target="_blank" rel="noopener">CV</a>
        <a href="/editor.html">Admin</a>
-      <button @click="theme = theme === 'dark' ? 'light' : 'dark'" aria-label="Toggle theme">
+      <button @click="toggleTheme" aria-label="Toggle theme">
         <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
       </button>
     </nav>

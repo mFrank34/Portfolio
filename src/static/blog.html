@@ -6,18 +6,24 @@
   <title>Blog Post</title>
   <link rel="stylesheet" href="/style.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+  <script defer src="theme.js"></script>
 </head>
 
-<body>
+<body x-data="{ ...themeMixin(), post: null, loading: true }" x-init="
+  initTheme();
+  const slug = window.location.pathname.split('/').pop();
+  const res = await fetch('/api/blog/' + slug);
+  if (res.ok) { post = await res.json(); }
+  loading = false;
+">
+  <header>
+    <a href="/">← Back home</a>
+    <button @click="toggleTheme" aria-label="Toggle theme">
+      <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
+    </button>
+  </header>
 
-  <a href="/">← Back home</a>
-
-  <article x-data="{ post: null, loading: true }" x-init="
-      const slug = window.location.pathname.split('/').pop();
-      const res = await fetch('/api/blog/' + slug);
-      if (res.ok) { post = await res.json(); }
-      loading = false;
-  ">
+  <article>
     <p x-show="loading">Loading...</p>
     <template x-if="post">
       <div>

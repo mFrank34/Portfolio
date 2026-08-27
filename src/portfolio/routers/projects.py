@@ -62,11 +62,11 @@ async def update_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    project.title = payload.title
-    project.slug = make_slug(payload.title)
-    project.description = payload.description
-    project.tech_stack = payload.tech_stack
-    project.url = payload.url
+    project.title = payload.title # pyright: ignore[reportAttributeAccessIssue]
+    project.slug = make_slug(payload.title) # pyright: ignore[reportAttributeAccessIssue]
+    project.description = payload.description # pyright: ignore[reportAttributeAccessIssue]
+    project.tech_stack = payload.tech_stack # pyright: ignore[reportAttributeAccessIssue]
+    project.url = payload.url # pyright: ignore[reportAttributeAccessIssue]
 
     await db.commit()
     await db.refresh(project)
