@@ -10,10 +10,28 @@ function editor() {
         blog: { title: '', content_md: '' },
         project: { title: '', description: '', tech_stack: '', url: '' },
 
+        // Skills state matching SkillIn schema
+        skills: [],
+        newSkill: '',
+        newSkillCategory: '',
+        newSkillLevel: '',
+        editingSkillId: null,
+
+        // Socials state matching SocialIn schema
+        socials: [],
+        newSite: '',
+        newLink: '',
+        newIcon: '',
+        editingSocialId: null,
+
         blogStatus: '',
         blogStatusType: '',
         projectStatus: '',
         projectStatusType: '',
+        skillsStatus: '',
+        skillsStatusType: '',
+        socialsStatus: '',
+        socialsStatusType: '',
 
         blogPreview: '',
         projectPreview: '',
@@ -27,6 +45,8 @@ function editor() {
 
         init() {
             this.initTheme();
+            this.loadSkills();
+            this.loadSocials();
         },
 
         // ---------- computed ----------
@@ -39,26 +59,26 @@ function editor() {
 
         // ---------- small helpers ----------
 
-        /** Set the status message + type ('success' | 'error' | '') for a given form. */
         setStatus(form, message, type = '') {
             if (form === 'blog') {
                 this.blogStatus = message;
                 this.blogStatusType = type;
-            } else {
+            } else if (form === 'project') {
                 this.projectStatus = message;
                 this.projectStatusType = type;
+            } else if (form === 'skills') {
+                this.skillsStatus = message;
+                this.skillsStatusType = type;
+            } else if (form === 'socials') {
+                this.socialsStatus = message;
+                this.socialsStatusType = type;
             }
         },
 
-        /** Headers for a write-protected request. */
         authHeaders(extra = {}) {
             return { 'X-Write-Key': this.writeKey, ...extra };
         },
 
-        /**
-         * fetch() wrapper: parses JSON, and on failure pulls out `detail`
-         * (or falls back to statusText) so callers don't repeat that logic.
-         */
         async apiFetch(url, options = {}) {
             const res = await fetch(url, options);
             if (!res.ok) {
@@ -69,7 +89,6 @@ function editor() {
             return res.status === 204 ? null : res.json();
         },
 
-        /** Markdown -> sanitized HTML, with a plain-text fallback if the CDN libs didn't load. */
         renderMarkdown(md) {
             if (!md) return '';
             try {
@@ -86,35 +105,32 @@ function editor() {
             }
         },
 
-        // ---------- manage tab ----------
-
         async loadManage() {
             this.manageError = null;
             try {
-                const [bp, pp] = await Promise.all([fetch('/api/blog'), fetch('/api/project')]);
+                const [bp, pp, sp, socp] = await Promise.all([
+                    fetch('/api/blog'),
+                    fetch('/api/project'),
+                    fetch('/api/skills'),
+                    fetch('/api/socials')
+                ]);
 
-                if (bp.ok) {
-                    this.posts = await bp.json();
-                } else {
-                    this.manageError = { ...this.manageError, posts: 'Failed to load posts' };
-                }
+                if (bp.ok) this.posts = await bp.json();
+                else this.manageError = { ...this.manageError, posts: 'Failed to load posts' };
 
-                if (pp.ok) {
-                    this.projectsList = await pp.json();
-                } else {
-                    this.manageError = { ...this.manageError, projects: 'Failed to load projects' };
-                }
+                if (pp.ok) this.projectsList = await pp.json();
+                else this.manageError = { ...this.manageError, projects: 'Failed to load projects' };
+
+                if (sp.ok) this.skills = await sp.json();
+                if (socp.ok) this.socials = await socp.json();
             } catch (e) {
                 this.manageError = { posts: 'Network error', projects: 'Network error' };
             }
         },
 
-        /** Refresh the manage lists, but only if that tab is currently visible. */
         async refreshManageIfVisible() {
             if (this.tab === 'manage') await this.loadManage();
         },
-
-        // ---------- blog: edit / delete ----------
 
         async startEditBlog(post) {
             this.editingBlogId = post.id;
@@ -146,8 +162,6 @@ function editor() {
             }
         },
 
-        // ---------- project: edit / delete ----------
-
         async startEditProject(pr) {
             this.editingProjectId = pr.id;
             try {
@@ -176,11 +190,8 @@ function editor() {
             }
         },
 
-        // ---------- blog: create / update ----------
-
         async createBlog() {
             this.setStatus('blog', 'Publishing...');
-
             const isEdit = Boolean(this.editingBlogId);
             const url = isEdit ? `/api/blog/${this.editingBlogId}` : '/api/blog';
             const method = isEdit ? 'PUT' : 'POST';
@@ -193,7 +204,6 @@ function editor() {
                 });
 
                 this.setStatus('blog', (isEdit ? 'Updated ' : 'Published! View at /blog/') + data.slug, 'success');
-
                 this.blog = { title: '', content_md: '' };
                 this.blogPreview = '';
                 this.editingBlogId = null;
@@ -208,8 +218,6 @@ function editor() {
         async previewBlog() {
             this.blogPreview = this.renderMarkdown(this.blog.content_md);
         },
-
-        // ---------- project: create / update ----------
 
         async createProject() {
             this.setStatus('project', 'Creating project...');
@@ -249,7 +257,6 @@ function editor() {
                 });
 
                 this.setStatus('project', (isEdit ? 'Updated ' : 'Created! View at /project/') + data.slug, 'success');
-
                 this.project = { title: '', description: '', tech_stack: '', url: '' };
                 this.editingProjectId = null;
             } catch (e) {
@@ -262,5 +269,129 @@ function editor() {
         async previewProject() {
             this.projectPreview = this.renderMarkdown(this.project.description);
         },
+
+        // ---------- skills: load / create / update / delete ----------
+
+        async loadSkills() {
+            try {
+                this.skills = await this.apiFetch('/api/skills');
+            } catch (e) {
+                console.error('Failed to load skills', e);
+            }
+        },
+
+        startEditSkill(skill) {
+            this.editingSkillId = skill.id;
+            this.newSkill = skill.name;
+            this.newSkillCategory = skill.category || '';
+            this.newSkillLevel = skill.level || '';
+        },
+
+        cancelEditSkill() {
+            this.editingSkillId = null;
+            this.newSkill = '';
+            this.newSkillCategory = '';
+            this.newSkillLevel = '';
+        },
+
+        async saveSkill() {
+            if (!this.newSkill.trim()) return;
+            const isEdit = Boolean(this.editingSkillId);
+            const endpoint = isEdit ? `/api/skills/${this.editingSkillId}` : '/api/skills';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                await this.apiFetch(endpoint, {
+                    method,
+                    headers: this.authHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        name: this.newSkill,
+                        category: this.newSkillCategory || null,
+                        level: this.newSkillLevel || null
+                    })
+                });
+                this.setStatus('skills', isEdit ? 'Skill updated' : 'Skill added', 'success');
+                this.cancelEditSkill();
+                await this.loadSkills();
+            } catch (e) {
+                this.setStatus('skills', 'Error: ' + e.message, 'error');
+            }
+        },
+
+        async deleteSkill(id) {
+            if (!confirm('Delete this skill?')) return;
+            try {
+                await this.apiFetch(`/api/skills/${id}`, {
+                    method: 'DELETE',
+                    headers: this.authHeaders(),
+                });
+                this.setStatus('skills', 'Skill deleted', 'success');
+                await this.loadSkills();
+            } catch (e) {
+                this.setStatus('skills', 'Delete failed: ' + e.message, 'error');
+            }
+        },
+
+        // ---------- socials: load / create / update / delete ----------
+
+        async loadSocials() {
+            try {
+                this.socials = await this.apiFetch('/api/socials');
+            } catch (e) {
+                console.error('Failed to load socials', e);
+            }
+        },
+
+        startEditSocial(social) {
+            this.editingSocialId = social.id;
+            this.newSite = social.site;
+            this.newLink = social.link;
+            this.newIcon = social.icon;
+        },
+
+        cancelEditSocial() {
+            this.editingSocialId = null;
+            this.newSite = '';
+            this.newLink = '';
+            this.newIcon = '';
+        },
+
+        async saveSocial() {
+            if (!this.newSite.trim() || !this.newLink.trim() || !this.newIcon.trim()) return;
+            const isEdit = Boolean(this.editingSocialId);
+            const endpoint = isEdit ? `/api/socials/${this.editingSocialId}` : '/api/socials';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                await this.apiFetch(endpoint, {
+                    method,
+                    headers: this.authHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        site: this.newSite,
+                        link: this.newLink,
+                        icon: this.newIcon
+                    })
+                });
+                this.setStatus('socials', isEdit ? 'Social updated' : 'Social added', 'success');
+                this.cancelEditSocial();
+                await this.loadSocials();
+            } catch (e) {
+                this.setStatus('socials', 'Error: ' + e.message, 'error');
+            }
+        },
+
+        async deleteSocial(id) {
+            if (!confirm('Delete this social link?')) return;
+            try {
+                await this.apiFetch(`/api/socials/${id}`, {
+                    method: 'DELETE',
+                    headers: this.authHeaders(),
+                });
+                this.setStatus('socials', 'Social deleted', 'success');
+                await this.loadSocials();
+            } catch (e) {
+                this.setStatus('socials', 'Delete failed: ' + e.message, 'error');
+            }
+        }
     };
 }

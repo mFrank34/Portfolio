@@ -190,6 +190,16 @@ h2 {
   display: block;
 }
 
+article img {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+  border-radius: 6px;
+  display: block;
+  margin: 1.5rem auto;
+}
+
 /* ---------- Editor page ---------- */
 
 body.editor {
@@ -232,7 +242,8 @@ body.editor .tabs {
   margin-top: 0.5rem;
 }
 
-body.editor .tabs button {
+body.editor .tabs button,
+body.editor .actions button {
   padding: 0.4rem 0.8rem;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -248,6 +259,8 @@ body.editor .tabs button.active {
 }
 
 body.editor .actions {
+  display: flex;
+  gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
