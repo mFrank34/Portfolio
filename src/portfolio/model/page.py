@@ -7,12 +7,13 @@ from portfolio.database import Base
 
 
 class Blog(Base):
-    __tablename__ = "blogs"
+    __tablename__ = "page"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(200))
-    slug: Mapped[str] = mapped_column(String(200), unique=True)
-    content_md: Mapped[str] = mapped_column(Text)  # raw markdown, as written
+    hero_title: Mapped[str] = mapped_column(String(200))
+    hero_subtitle: Mapped[str] = mapped_column(String(200))
+    content_md: Mapped[str] = mapped_column(Text)
+    
     created_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc)
     )

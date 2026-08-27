@@ -7,7 +7,7 @@ from portfolio.database import get_db
 from portfolio.model.social import Social
 from portfolio.schema.social import SocialIn, SocialOut
 
-router = APIRouter(prefix="/api/socials", tags=["socials"])
+router = APIRouter(prefix="/api/socials", tags=["Socials"])
 
 
 @router.get("", response_model=list[SocialOut])

@@ -10,7 +10,7 @@ from portfolio.model.project import Project
 from portfolio.schema.project import ProjectIn, ProjectOut
 from portfolio.shared.slug import make_slug
 
-router = APIRouter(prefix="/api/project", tags=["projects"])
+router = APIRouter(prefix="/api/project", tags=["Projects"])
 
 
 @router.get("", response_model=list[ProjectOut])

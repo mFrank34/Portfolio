@@ -7,7 +7,7 @@ from portfolio.database import get_db
 from portfolio.model.skill import Skill
 from portfolio.schema.skill import SkillIn, SkillOut
 
-router = APIRouter(prefix="/api/skills", tags=["skills"])
+router = APIRouter(prefix="/api/skills", tags=["Skills"])
 
 
 @router.get("", response_model=list[SkillOut])

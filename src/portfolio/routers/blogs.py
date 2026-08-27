@@ -9,7 +9,7 @@ from portfolio.schema.blog import BlogIn, BlogOut
 from portfolio.shared.slug import make_slug
 from portfolio.shared.render import render_html
 
-router = APIRouter(prefix="/api/blog", tags=["blog"])
+router = APIRouter(prefix="/api/blog", tags=["Blogs"])
 
 
 async def get_unique_slug(db: AsyncSession, base_slug: str) -> str:
