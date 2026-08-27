@@ -1,22 +1,3 @@
-/**
- * Shared theme handling, spread into any Alpine component's x-data.
- *
- * Usage:
- *   <body x-data="{ ...themeMixin(), other: 'state' }" x-init="initTheme()">
- *
- * Or inside a named component (like editor()):
- *   function editor() {
- *     return {
- *       ...themeMixin(),
- *       ...otherState,
- *       init() { this.initTheme(); },
- *     };
- *   }
- *
- * initTheme() must be called explicitly from the component's own init/x-init,
- * since Alpine only ever calls one `init()` per component and we don't want
- * to silently overwrite a component's own init logic by spreading one in.
- */
 function themeMixin() {
     return {
         theme: localStorage.getItem('theme')
@@ -25,14 +6,14 @@ function themeMixin() {
         initTheme() {
             document.documentElement.setAttribute('data-theme', this.theme);
 
-            this.$watch('theme', (value) => {
+            this.$watch('theme', (value, oldValue) => {
+                if (value === oldValue) return;
                 localStorage.setItem('theme', value);
                 document.documentElement.setAttribute('data-theme', value);
             });
 
-            // Keep in sync if the theme is changed in another tab
             window.addEventListener('storage', (e) => {
-                if (e.key === 'theme' && e.newValue) {
+                if (e.key === 'theme' && e.newValue && e.newValue !== this.theme) {
                     this.theme = e.newValue;
                 }
             });

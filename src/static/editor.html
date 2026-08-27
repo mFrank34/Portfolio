@@ -5,6 +5,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Editor — Admin</title>
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <link rel="stylesheet" href="style.css" />
   <script defer src="theme.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
@@ -18,9 +24,6 @@
   <header>
     <a href="/">← Back home</a>
     <h1>Content Editor</h1>
-    <button @click="toggleTheme" aria-label="Toggle theme">
-      <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
-    </button>
   </header>
 
   <main>

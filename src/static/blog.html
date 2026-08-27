@@ -4,23 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Blog Post</title>
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <link rel="stylesheet" href="/style.css">
-  <script defer src="theme.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+  <script defer src="/theme.js"></script>
 </head>
 
 <body x-data="{ ...themeMixin(), post: null, loading: true }" x-init="
   initTheme();
-  const slug = window.location.pathname.split('/').pop();
-  const res = await fetch('/api/blog/' + slug);
-  if (res.ok) { post = await res.json(); }
-  loading = false;
+  (async () => {
+    const slug = window.location.pathname.split('/').filter(Boolean).pop();
+    const res = await fetch('/api/blog/' + slug);
+    if (res.ok) { post = await res.json(); }
+    loading = false;
+  })();
 ">
   <header>
     <a href="/">← Back home</a>
-    <button @click="toggleTheme" aria-label="Toggle theme">
-      <span x-text="theme === 'dark' ? '☀️' : '🌙'"></span>
-    </button>
   </header>
 
   <article>
