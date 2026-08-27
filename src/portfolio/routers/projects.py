@@ -58,13 +58,13 @@ async def update_project(
         raise HTTPException(status_code=404, detail="Project not found")
 
     project.title = payload.title  # pyright: ignore[reportAttributeAccessIssue]
-    project.slug = make_slug(
+    project.slug = make_slug( # pyright: ignore[reportAttributeAccessIssue]
         payload.title
     )  # pyright: ignore[reportAttributeAccessIssue]
-    project.description = (
+    project.description = ( # pyright: ignore[reportAttributeAccessIssue]
         payload.description
     )  # pyright: ignore[reportAttributeAccessIssue]
-    project.tech_stack = (
+    project.tech_stack = ( # pyright: ignore[reportAttributeAccessIssue]
         payload.tech_stack
     )  # pyright: ignore[reportAttributeAccessIssue]
     project.url = payload.url  # pyright: ignore[reportAttributeAccessIssue]
