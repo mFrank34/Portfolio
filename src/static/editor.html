@@ -11,7 +11,7 @@
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
-  <link rel="stylesheet" href="style.css?v=1.1"/>
+  <link rel="stylesheet" href="style.css?v=1.1" />
   <script defer src="theme.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -33,12 +33,42 @@
       </label>
 
       <div class="tabs">
+        <button :class="{active: tab==='page'}" @click="tab='page'; loadPage()">Page</button>
         <button :class="{active: tab==='blog'}" @click="tab='blog'">New Blog Post</button>
         <button :class="{active: tab==='project'}" @click="tab='project'">New Project</button>
         <button :class="{active: tab==='skills'}" @click="tab='skills'">Skills</button>
         <button :class="{active: tab==='socials'}" @click="tab='socials'">Socials</button>
         <button :class="{active: tab==='manage'}" @click="tab='manage'; loadManage()">Manage</button>
       </div>
+    </section>
+
+    <section x-show="tab==='page'" class="form-section">
+      <h2>Front Page Content</h2>
+      <label>Hero Title
+        <input type="text" x-model="page.hero_title" placeholder="e.g. Frank" />
+      </label>
+      <label>Hero Subtitle
+        <input type="text" x-model="page.hero_subtitle" placeholder="e.g. Software developer" />
+      </label>
+      <label>Content (Markdown)
+        <textarea x-model="page.content_md" rows="12" placeholder="Write markdown here..."></textarea>
+      </label>
+
+      <div class="actions">
+        <button @click="savePage" :disabled="!canSubmitPage">Save</button>
+        <button @click="previewPage">Preview</button>
+      </div>
+
+      <p :class="['status', pageStatusType]" x-text="pageStatus"></p>
+
+      <template x-if="pagePreview">
+        <section class="preview">
+          <h3>Preview</h3>
+          <h4 x-text="page.hero_title"></h4>
+          <p x-text="page.hero_subtitle"></p>
+          <div x-html="pagePreview"></div>
+        </section>
+      </template>
     </section>
 
     <section x-show="tab==='blog'" class="form-section">

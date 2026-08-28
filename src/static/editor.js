@@ -4,8 +4,14 @@ function editor() {
         ...themeMixin(),
 
         // ---------- state ----------
-        tab: 'blog',
+        tab: 'page',
         writeKey: '',
+
+        page: { hero_title: '', hero_subtitle: '', content_md: '' },
+        pageExists: false,
+        pageStatus: '',
+        pageStatusType: '',
+        pagePreview: '',
 
         blog: { title: '', content_md: '' },
         project: { title: '', description: '', tech_stack: '', url: '' },
@@ -47,6 +53,7 @@ function editor() {
             this.initTheme();
             this.loadSkills();
             this.loadSocials();
+            this.loadPage();
         },
 
         // ---------- computed ----------
@@ -56,11 +63,17 @@ function editor() {
         get canSubmitProject() {
             return this.writeKey && this.project.title;
         },
+        get canSubmitPage() {
+            return this.writeKey && this.page.hero_title && this.page.hero_subtitle && this.page.content_md;
+        },
 
         // ---------- small helpers ----------
 
         setStatus(form, message, type = '') {
-            if (form === 'blog') {
+            if (form === 'page') {
+                this.pageStatus = message;
+                this.pageStatusType = type;
+            } else if (form === 'blog') {
                 this.blogStatus = message;
                 this.blogStatusType = type;
             } else if (form === 'project') {
@@ -103,6 +116,53 @@ function editor() {
                     .replace(/>/g, '&gt;')
                     .replace(/\n/g, '<br/>');
             }
+        },
+
+        // ---------- page: load / save ----------
+
+        async loadPage() {
+            try {
+                const res = await fetch('/api/page/raw');
+                if (res.ok) {
+                    const data = await res.json();
+                    this.page.hero_title = data.hero_title || '';
+                    this.page.hero_subtitle = data.hero_subtitle || '';
+                    this.page.content_md = data.content_md || '';
+                    this.pageExists = true;
+                } else if (res.status === 404) {
+                    this.page = { hero_title: '', hero_subtitle: '', content_md: '' };
+                    this.pageExists = false;
+                } else {
+                    this.setStatus('page', 'Failed to load page content', 'error');
+                }
+            } catch (e) {
+                this.setStatus('page', 'Network error loading page', 'error');
+            }
+        },
+
+        async savePage() {
+            this.setStatus('page', 'Saving...');
+            const method = this.pageExists ? 'PUT' : 'POST';
+
+            try {
+                await this.apiFetch('/api/page', {
+                    method,
+                    headers: this.authHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        hero_title: this.page.hero_title,
+                        hero_subtitle: this.page.hero_subtitle,
+                        content_md: this.page.content_md,
+                    }),
+                });
+                this.setStatus('page', 'Saved', 'success');
+                this.pageExists = true;
+            } catch (e) {
+                this.setStatus('page', 'Error: ' + e.message, 'error');
+            }
+        },
+
+        async previewPage() {
+            this.pagePreview = this.renderMarkdown(this.page.content_md);
         },
 
         async loadManage() {

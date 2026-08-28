@@ -27,6 +27,14 @@ function homeApp() {
             } finally {
                 this.loading = false;
             }
+        },
+        get formattedUpdatedAt() {
+            if (!this.page?.updated_at) return '';
+            return new Date(this.page.updated_at).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
         }
     };
 }

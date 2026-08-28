@@ -18,8 +18,7 @@ class Page(Base):
     )
     updated_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc),
-        on_update=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
 
     __table_args__ = (CheckConstraint("id = 1", name="singleton_page"),)
-

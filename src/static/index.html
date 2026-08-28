@@ -53,7 +53,7 @@
   <!-- PAGE CONTENT -->
   <section id="hero">
     <p x-text="page?.hero_subtitle"></p>
-    <div class="page-content" x-html="page?.content_md"></div>
+    <div class="page-content" x-html="page?.content"></div>
   </section>
 
   <!-- SOCIALS -->
@@ -104,6 +104,11 @@
       </template>
     </div>
   </section>
+
+
+  <footer>
+    <p x-show="page?.updated_at">Last updated: <span x-text="formattedUpdatedAt"></span></p>
+  </footer>
 </body>
 
 </html>

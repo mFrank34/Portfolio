@@ -28,8 +28,18 @@ async def get_page(db: AsyncSession = Depends(get_db)):
 
 @router.get("/raw", response_model=PageOut)
 async def get_page_raw(db: AsyncSession = Depends(get_db)):
-    result = await db.get(Page, 1)
-    return result
+    page = await db.get(Page, 1)
+    if page is None:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    return PageOut(
+        id=page.id,
+        hero_title=page.hero_title,
+        hero_subtitle=page.hero_subtitle,
+        content=page.content_md,
+        created_at=page.created_at,
+        updated_at=page.updated_at,
+    )
 
 
 @router.post("", response_model=PageOut, dependencies=[Depends(require_key)])
@@ -48,7 +58,14 @@ async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(page)
 
-    return page
+    return PageOut(
+        id=page.id,
+        hero_title=page.hero_title,
+        hero_subtitle=page.hero_subtitle,
+        content=render_html(page.content_md),
+        created_at=page.created_at,
+        updated_at=page.updated_at,
+    )
 
 
 @router.put("", response_model=PageOut, dependencies=[Depends(require_key)])
@@ -64,4 +81,11 @@ async def update_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(page)
 
-    return page
+    return PageOut(
+        id=page.id,
+        hero_title=page.hero_title,
+        hero_subtitle=page.hero_subtitle,
+        content=render_html(page.content_md),
+        created_at=page.created_at,
+        updated_at=page.updated_at,
+    )
