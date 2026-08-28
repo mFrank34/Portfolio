@@ -17,4 +17,4 @@ class PageOut(BaseModel):
 class PageIn(BaseModel):
     hero_title: str
     hero_subtitle: str
-    content_md: str
+    content: str

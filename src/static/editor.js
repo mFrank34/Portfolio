@@ -7,7 +7,7 @@ function editor() {
         tab: 'page',
         writeKey: '',
 
-        page: { hero_title: '', hero_subtitle: '', content_md: '' },
+        page: { hero_title: '', hero_subtitle: '', content: '' },
         pageExists: false,
         pageStatus: '',
         pageStatusType: '',
@@ -64,7 +64,7 @@ function editor() {
             return this.writeKey && this.project.title;
         },
         get canSubmitPage() {
-            return this.writeKey && this.page.hero_title && this.page.hero_subtitle && this.page.content_md;
+            return this.writeKey && this.page.hero_title && this.page.hero_subtitle && this.page.content;
         },
 
         // ---------- small helpers ----------
@@ -127,10 +127,10 @@ function editor() {
                     const data = await res.json();
                     this.page.hero_title = data.hero_title || '';
                     this.page.hero_subtitle = data.hero_subtitle || '';
-                    this.page.content_md = data.content_md || '';
+                    this.page.content = data.content || '';
                     this.pageExists = true;
                 } else if (res.status === 404) {
-                    this.page = { hero_title: '', hero_subtitle: '', content_md: '' };
+                    this.page = { hero_title: '', hero_subtitle: '', content: '' };
                     this.pageExists = false;
                 } else {
                     this.setStatus('page', 'Failed to load page content', 'error');
@@ -151,7 +151,7 @@ function editor() {
                     body: JSON.stringify({
                         hero_title: this.page.hero_title,
                         hero_subtitle: this.page.hero_subtitle,
-                        content_md: this.page.content_md,
+                        content: this.page.content,
                     }),
                 });
                 this.setStatus('page', 'Saved', 'success');
@@ -162,7 +162,7 @@ function editor() {
         },
 
         async previewPage() {
-            this.pagePreview = this.renderMarkdown(this.page.content_md);
+            this.pagePreview = this.renderMarkdown(this.page.content);
         },
 
         async loadManage() {

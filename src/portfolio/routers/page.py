@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/page", tags=["Page"])
 
 
 @router.get("", response_model=PageOut)
+@router.get("", response_model=PageOut)
 async def get_page(db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:
@@ -20,7 +21,7 @@ async def get_page(db: AsyncSession = Depends(get_db)):
         id=page.id,
         hero_title=page.hero_title,
         hero_subtitle=page.hero_subtitle,
-        content=render_html(page.content_md),
+        content=render_html(page.content),
         created_at=page.created_at,
         updated_at=page.updated_at,
     )
@@ -36,7 +37,7 @@ async def get_page_raw(db: AsyncSession = Depends(get_db)):
         id=page.id,
         hero_title=page.hero_title,
         hero_subtitle=page.hero_subtitle,
-        content=page.content_md,
+        content=page.content,
         created_at=page.created_at,
         updated_at=page.updated_at,
     )
@@ -52,7 +53,7 @@ async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
         id=1,
         hero_title=payload.hero_title,
         hero_subtitle=payload.hero_subtitle,
-        content_md=payload.content_md,
+        content=payload.content,
     )
     db.add(page)
     await db.commit()
@@ -62,7 +63,7 @@ async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
         id=page.id,
         hero_title=page.hero_title,
         hero_subtitle=page.hero_subtitle,
-        content=render_html(page.content_md),
+        content=render_html(page.content),
         created_at=page.created_at,
         updated_at=page.updated_at,
     )
@@ -76,7 +77,7 @@ async def update_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
 
     page.hero_title = payload.hero_title
     page.hero_subtitle = payload.hero_subtitle
-    page.content_md = payload.content_md
+    page.content = payload.content
 
     await db.commit()
     await db.refresh(page)
@@ -85,7 +86,7 @@ async def update_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
         id=page.id,
         hero_title=page.hero_title,
         hero_subtitle=page.hero_subtitle,
-        content=render_html(page.content_md),
+        content=render_html(page.content),
         created_at=page.created_at,
         updated_at=page.updated_at,
     )
