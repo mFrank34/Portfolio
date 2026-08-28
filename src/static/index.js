@@ -28,6 +28,10 @@ function homeApp() {
                 this.loading = false;
             }
         },
+        renderMarkdown(content) {
+            if (!content) return '';
+            return typeof marked !== 'undefined' ? marked.parse(content) : content;
+        },
         get formattedUpdatedAt() {
             if (!this.page?.updated_at) return '';
             return new Date(this.page.updated_at).toLocaleDateString(undefined, {

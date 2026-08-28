@@ -54,7 +54,7 @@
   <!-- PAGE CONTENT -->
   <section id="hero">
     <p x-text="page?.hero_subtitle"></p>
-    <div class="page-content" x-html="marked.parse(page?.content || '')"></div>
+    <div class="page-content" x-html="renderMarkdown(page?.content)"></div>
   </section>
 
   <!-- SOCIALS -->
