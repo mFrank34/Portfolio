@@ -32,6 +32,10 @@
     <p x-show="!loading && !post">Post not found.</p>
   </article>
 
+  <footer>
+    <p x-show="post?.updated_at">Last updated: <span x-text="formattedUpdatedAt"></span></p>
+  </footer>
+
 </body>
 
 </html>

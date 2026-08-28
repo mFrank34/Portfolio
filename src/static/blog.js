@@ -16,6 +16,14 @@ function blogPostApp() {
             } finally {
                 this.loading = false;
             }
+        },
+        get formattedUpdatedAt() {
+            if (!this.post?.updated_at) return '';
+            return new Date(this.post.updated_at).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
         }
     };
 }
