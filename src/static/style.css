@@ -65,7 +65,13 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  margin: 0 -1rem;
+  padding: 1rem;
+  transition: background 0.2s ease;
 }
 
 header h1 {
@@ -358,7 +364,6 @@ body.editor .manage-actions button {
 footer {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--card-border);
   text-align: center;
   color: var(--nav-text);
   font-size: 0.85rem;
