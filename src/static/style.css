@@ -237,7 +237,8 @@ h2 {
 }
 
 article img,
-.preview img {
+.preview img,
+.page-content img {
   max-width: 100% !important;
   width: 100% !important;
   height: auto !important;
@@ -246,7 +247,6 @@ article img,
   display: block;
   margin: 1.5rem auto;
 }
-
 /* ---------- Editor page ---------- */
 
 body.editor {

@@ -52,11 +52,11 @@
   </header>
 
   <!-- PAGE CONTENT -->
-  <section id="hero">
+  <section id="hero" x-show="page">
     <p x-text="page?.hero_subtitle"></p>
-    <div class="page-content" x-html="renderMarkdown(page?.content)"></div>
+    <div class="page-content" x-html="page?.content || ''"></div>
   </section>
-
+  
   <!-- SOCIALS -->
   <section id="socials">
     <h2>Socials</h2>
