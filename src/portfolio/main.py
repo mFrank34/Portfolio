@@ -36,5 +36,9 @@ async def blog_post_page():
 async def project_page():
     return FileResponse(os.path.join(STATIC_DIR, "project.html"))
 
+@app.get("/admin")
+async def admin_page():
+    return FileResponse(os.path.join(STATIC_DIR, "editor.html"))
+
 
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
