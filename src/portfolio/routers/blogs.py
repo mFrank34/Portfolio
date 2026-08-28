@@ -41,6 +41,7 @@ async def list_posts(
             slug=p.slug,
             content=render_html(p.content_md),
             created_at=p.created_at,
+            updated_at=p.updated_at,
         )
         for p in posts
     ]
@@ -72,6 +73,7 @@ async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
         slug=blog.slug,
         content=render_html(blog.content_md),
         created_at=blog.created_at,
+        updated_at=blog.updated_at,
     )
 
 
@@ -95,19 +97,8 @@ async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
         slug=new_blog.slug,
         content=render_html(new_blog.content_md),
         created_at=new_blog.created_at,
+        updated_at=new_blog.updated_at,
     )
-
-
-@router.delete("/{post_id}", dependencies=[Depends(require_key)])
-async def delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Blog).where(Blog.id == post_id))
-    blog = result.scalar_one_or_none()
-    if not blog:
-        raise HTTPException(status_code=404, detail="Post not found")
-
-    await db.delete(blog)
-    await db.commit()
-    return {"deleted": post_id}
 
 
 @router.put("/{post_id}", response_model=BlogOut, dependencies=[Depends(require_key)])
@@ -137,4 +128,17 @@ async def update_blog(
         slug=blog.slug,
         content=render_html(blog.content_md),
         created_at=blog.created_at,
+        updated_at=blog.updated_at,
     )
+
+
+@router.delete("/{post_id}", dependencies=[Depends(require_key)])
+async def delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Blog).where(Blog.id == post_id))
+    blog = result.scalar_one_or_none()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    await db.delete(blog)
+    await db.commit()
+    return {"deleted": post_id}
