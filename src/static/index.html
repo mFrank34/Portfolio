@@ -11,9 +11,10 @@
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
-  <link rel="stylesheet" href="/style.css?v=2" />
+  <link rel="stylesheet" href="/style.css?v=1" />
   <script src="/theme.js"></script>
   <script src="/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
 </head>
 
@@ -53,7 +54,7 @@
   <!-- PAGE CONTENT -->
   <section id="hero">
     <p x-text="page?.hero_subtitle"></p>
-    <div class="page-content" x-html="page?.content"></div>
+    <div class="page-content" x-html="marked.parse(page?.content || '')"></div>
   </section>
 
   <!-- SOCIALS -->
