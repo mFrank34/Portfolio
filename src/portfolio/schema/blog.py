@@ -6,7 +6,7 @@ class BlogOut(BaseModel):
     id: int
     title: str
     slug: str
-    content_html: str
+    content: str
     created_at: datetime
 
     class Config:

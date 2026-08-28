@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from portfolio.database import engine, Base
-from portfolio.routers import blogs, projects, skills, socials
+from portfolio.routers import blogs, projects, skills, socials, page
 
 app = FastAPI()
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "../static")
@@ -15,6 +15,8 @@ async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
+
+app.include_router(page.router)
 
 app.include_router(socials.router)
 

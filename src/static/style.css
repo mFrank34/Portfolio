@@ -68,6 +68,12 @@ header {
   margin-bottom: 3rem;
 }
 
+header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
 nav a {
   margin-left: 1.2rem;
   color: var(--nav-text);
@@ -96,6 +102,40 @@ section {
 h2 {
   margin-bottom: 1.25rem;
   font-size: 1.5rem;
+}
+
+#hero {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+#hero p {
+  color: var(--nav-text);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.page-content {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.page-content h2,
+.page-content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.page-content p {
+  margin-bottom: 1rem;
+}
+
+.page-content a {
+  color: var(--link);
+}
+
+.page-content a:hover {
+  color: var(--link-hover);
 }
 
 .grid {

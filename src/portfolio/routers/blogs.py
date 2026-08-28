@@ -39,14 +39,14 @@ async def list_posts(
             id=p.id,
             title=p.title,
             slug=p.slug,
-            content_html=render_html(p.content_md),
+            content=render_html(p.content_md),
             created_at=p.created_at,
         )
         for p in posts
     ]
 
 
-@router.get("/{post_id}/raw", dependencies=[Depends(require_key)])
+@router.get("/{post_id}/raw")
 async def get_post_raw(post_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog).where(Blog.id == post_id))
     blog = result.scalar_one_or_none()
@@ -70,7 +70,7 @@ async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
         id=blog.id,
         title=blog.title,
         slug=blog.slug,
-        content_html=render_html(blog.content_md),
+        content=render_html(blog.content_md),
         created_at=blog.created_at,
     )
 
@@ -93,7 +93,7 @@ async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
         id=new_blog.id,
         title=new_blog.title,
         slug=new_blog.slug,
-        content_html=render_html(new_blog.content_md),
+        content=render_html(new_blog.content_md),
         created_at=new_blog.created_at,
     )
 
@@ -135,6 +135,6 @@ async def update_blog(
         id=blog.id,
         title=blog.title,
         slug=blog.slug,
-        content_html=render_html(blog.content_md),
+        content=render_html(blog.content_md),
         created_at=blog.created_at,
     )

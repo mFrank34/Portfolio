@@ -13,31 +13,51 @@
   </script>
   <link rel="stylesheet" href="/style.css?v=2" />
   <script src="/theme.js"></script>
+  <script src="/index.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
 </head>
 
-<body x-data="{ ...themeMixin() }" x-init="initTheme()">
+<body x-data="homeApp()" x-init="init()">
   <header>
-    <h1>Frank</h1>
+    <h1 x-text="page?.hero_title || 'Frank'"></h1>
     <nav>
       <a href="#projects">Projects</a>
       <a href="#skills">Skills</a>
       <a href="#blog">Blog</a>
       <a href="/cv.pdf" target="_blank" rel="noopener">CV</a>
       <a href="/editor.html">Admin</a>
-      <button @click="toggleTheme" aria-label="Toggle theme" style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; color: var(--nav-text); vertical-align: middle;">
+      <button @click="toggleTheme" aria-label="Toggle theme"
+        style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; color: var(--nav-text); vertical-align: middle;">
         <!-- Sun icon (shown in dark mode) -->
-        <svg x-show="theme === 'dark'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg x-show="theme === 'dark'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
         <!-- Moon icon (shown in light mode) -->
-        <svg x-show="theme === 'light'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg x-show="theme === 'light'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
       </button>
     </nav>
   </header>
 
+  <!-- PAGE CONTENT -->
+  <section id="hero">
+    <p x-text="page?.hero_subtitle"></p>
+    <div class="page-content" x-html="page?.content_md"></div>
+  </section>
+
   <!-- SOCIALS -->
-  <section id="socials" x-data="{ socials: [] }" x-init="
-    socials = await (await fetch('/api/socials')).json();
-">
+  <section id="socials">
     <h2>Socials</h2>
     <div class="socials-list">
       <template x-for="s in socials" :key="s.id">
@@ -51,9 +71,7 @@
   </section>
 
   <!-- SKILLS -->
-  <section id="skills" x-data="{ skills: [] }" x-init="
-      skills = await (await fetch('/api/skills')).json();
-  ">
+  <section id="skills">
     <h2>Skills</h2>
     <div class="skills-list">
       <template x-for="s in skills" :key="s.id">
@@ -63,10 +81,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects" x-data="{ projects: [], loading: true }" x-init="
-      projects = await (await fetch('/api/project')).json();
-      loading = false;
-  ">
+  <section id="projects">
     <h2>Projects</h2>
     <p x-show="loading">Loading projects...</p>
     <div class="grid">
@@ -79,9 +94,7 @@
   </section>
 
   <!-- BLOG -->
-  <section id="blog" x-data="{ posts: [] }" x-init="
-      posts = await (await fetch('/api/blog')).json();
-  ">
+  <section id="blog">
     <h2>Blogs</h2>
     <div class="post-list">
       <template x-for="post in posts" :key="post.id">
