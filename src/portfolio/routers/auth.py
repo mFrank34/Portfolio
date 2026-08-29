@@ -8,7 +8,8 @@ from portfolio.auth import authenticate_user, create_access_token, get_current_u
 from portfolio.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from portfolio.database import get_db
 from portfolio.model.user import User
-from portfolio.schema.auth import Token
+
+from portfolio.schema.auth import User
 
 router = APIRouter(tags=["Auth"])
 
@@ -51,8 +52,6 @@ async def login_for_access_token(
     return {"message": "Login successful"}
 
 
-@router.get("/users/me/")
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
+@router.get("/users/me/", response_model=User)
+async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user

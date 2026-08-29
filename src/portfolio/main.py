@@ -1,6 +1,6 @@
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pwdlib import PasswordHash
@@ -30,13 +30,15 @@ async def lifespan(app: FastAPI):
 
         if not existing_user:
             hashed_pw = password_hash.hash(settings.password)
-            admin_user = User(username=settings.admin_username, hashed_password=hashed_pw)
+            admin_user = User(
+                username=settings.admin_username, hashed_password=hashed_pw
+            )
             db.add(admin_user)
             await db.commit()
             print(f"Bootstrapped admin user '{settings.admin_username}'.")
         else:
             print(f"Admin user '{settings.admin_username}' already exists.")
-            
+
     yield
 
 
@@ -59,13 +61,25 @@ async def blog_post_page():
 async def project_page():
     return FileResponse(os.path.join(STATIC_DIR, "project.html"))
 
+
 @app.get("/admin")
 async def admin_page():
     return FileResponse(os.path.join(STATIC_DIR, "editor.html"))
 
+
 @app.get("/favicon.ico")
 async def get_icon():
     return FileResponse(os.path.join(STATIC_DIR, "assets/favicon.ico"))
+
+
+@app.get("/{page_name}")
+async def serve_page(page_name: str):
+    file_path = os.path.abspath(os.path.join(STATIC_DIR, f"{page_name}.html"))
+    if not file_path.startswith(os.path.abspath(STATIC_DIR) + os.sep):
+        raise HTTPException(status_code=404, detail="Page not found")
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="Page not found")
 
 
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

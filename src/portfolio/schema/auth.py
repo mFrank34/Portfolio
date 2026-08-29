@@ -11,6 +11,7 @@ class TokenData(BaseModel):
 
 
 class User(BaseModel):
+    id: int
     username: str
 
 

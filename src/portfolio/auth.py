@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, status, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
 
 import jwt
@@ -18,7 +18,6 @@ from portfolio.model.user import User
 from portfolio.schema.auth import TokenData
 
 password_hash = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 HASH_CODE = password_hash.hash(settings.secret_key)
 
@@ -32,7 +31,6 @@ def get_password_hash(password):
 
 
 async def get_user(db: AsyncSession, username: str):
-    # Async style query using select()
     result = await db.execute(select(User).filter(User.username == username))
     return result.scalars().first()
 
@@ -58,9 +56,20 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+async def get_token_from_cookie(request: Request) -> str:
+    auth_cookie = request.cookies.get("access_token")
+    if not auth_cookie or not auth_cookie.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return auth_cookie.removeprefix("Bearer ")
+
+
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: AsyncSession = Depends(get_db),  # Type hinted as AsyncSession
+    token: Annotated[str, Depends(get_token_from_cookie)],
+    db: AsyncSession = Depends(get_db),
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
