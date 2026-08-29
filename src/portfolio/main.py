@@ -92,6 +92,11 @@ async def get_icon():
     return _serve_static_file("assets/favicon.ico")
 
 
+@app.get("/cv")
+async def get_cv():
+    return _serve_static_file("assets/cv.pdf")
+
+
 @app.get("/{page_name}")
 async def serve_page(page_name: str):
     file_path = os.path.abspath(os.path.join(STATIC_DIR, f"{page_name}.html"))
