@@ -12,6 +12,7 @@
     </script>
     <title>Log In</title>
     <script src="/theme.js"></script>
+    <script src="/login.js" defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -23,7 +24,7 @@
     <main class="login-wrapper">
         <div class="card login-card">
             <h2>Log In</h2>
-            <form action="/login" method="POST">
+            <form id="login-form">
                 <div class="input-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
@@ -32,6 +33,9 @@
                 <div class="input-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
+                </div>
+
+                <div id="error-message" style="color: red; font-size: 0.9rem; margin-bottom: 1rem; display: none;">
                 </div>
 
                 <button type="submit" class="login-btn">Sign In</button>

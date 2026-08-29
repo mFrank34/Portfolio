@@ -24,18 +24,18 @@ async def lifespan(app: FastAPI):
     # 2. Seed default admin user from environment variables
     async with async_session() as db:
         result = await db.execute(
-            select(User).filter(User.username == settings.username)
+            select(User).filter(User.username == settings.admin_username)
         )
         existing_user = result.scalars().first()
 
         if not existing_user:
             hashed_pw = password_hash.hash(settings.password)
-            admin_user = User(username=settings.username, hashed_password=hashed_pw)
+            admin_user = User(username=settings.admin_username, hashed_password=hashed_pw)
             db.add(admin_user)
             await db.commit()
-            print(f"Bootstrapped admin user '{settings.username}'.")
+            print(f"Bootstrapped admin user '{settings.admin_username}'.")
         else:
-            print(f"Admin user '{settings.username}' already exists.")
+            print(f"Admin user '{settings.admin_username}' already exists.")
             
     yield
 

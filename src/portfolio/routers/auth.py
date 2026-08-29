@@ -13,12 +13,18 @@ from portfolio.schema.auth import Token
 router = APIRouter(tags=["Auth"])
 
 
-@router.post("/token", response_model=Token)
+from fastapi import Response, status, HTTPException, Depends
+from typing import Annotated
+from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
+
+
+@router.post("/token")
 async def login_for_access_token(
+    response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db),
-) -> Token:
-    # Must await authenticate_user since it uses an async db query
+):
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -26,11 +32,23 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+
+    # Set the token in a secure HttpOnly cookie
+    response.set_cookie(
+        key="access_token",
+        value=f"Bearer {access_token}",
+        httponly=True,
+        secure=False,  # Set to True when you deploy with HTTPS
+        samesite="lax",
+        max_age=int(access_token_expires.total_seconds()),
+    )
+
+    return {"message": "Login successful"}
 
 
 @router.get("/users/me/")

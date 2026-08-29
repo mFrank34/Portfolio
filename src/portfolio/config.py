@@ -5,11 +5,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 class Settings(BaseSettings):
-    secret_key: str  # Use a colon here
-    username: str
+    secret_key: str
+    admin_username: str  # Renamed from 'username' to avoid OS conflict
     password: str
 
-    database_url: str = "sqlite:///./site.db"
+    database_url: str = "sqlite+aiosqlite:///./portfolio.db"
     sql_echo: bool = False
     cors_origins: list[str] = ["http://localhost:8000"]
     environment: str = "development"
