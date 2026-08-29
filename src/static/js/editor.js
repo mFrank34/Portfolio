@@ -91,31 +91,35 @@ function editor() {
         },
 
         // ---------- page ----------
+        // Inside your editor.js component
+
         async loadPage() {
-            try {
-                const data = await this.apiFetch('/api/page/raw');
-                this.page = {
-                    hero_title: data.hero_title || '',
-                    hero_subtitle: data.hero_subtitle || '',
-                    content: data.content || '',
-                };
-                this.pageExists = true;
-            } catch (e) {
-                this.pageExists = false;
+            // Use the /raw endpoint so the textarea gets raw Markdown, not rendered HTML
+            const res = await fetch('/api/page/raw');
+            if (res.ok) {
+                this.page = await res.json();
             }
         },
+
         async savePage() {
-            this.setStatus('page', 'Saving...');
-            try {
-                await this.apiFetch('/api/page', {
-                    method: this.pageExists ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.page),
-                });
-                this.setStatus('page', 'Saved', 'success');
-                this.pageExists = true;
-            } catch (e) {
-                this.setStatus('page', 'Error: ' + e.message, 'error');
+            // Use PUT because page ID 1 already exists (POST creates a new one and causes the 409 error)
+            const res = await fetch('/api/page', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    hero_title: this.page.hero_title,
+                    hero_subtitle: this.page.hero_subtitle,
+                    content: this.page.content
+                })
+            });
+
+            if (res.ok) {
+                this.pageStatus = 'Saved successfully!';
+                this.pageStatusType = 'success';
+            } else {
+                const err = await res.json();
+                this.pageStatus = err.detail || 'Error saving page';
+                this.pageStatusType = 'error';
             }
         },
 
