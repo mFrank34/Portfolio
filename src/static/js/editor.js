@@ -30,11 +30,10 @@ function editor() {
 
         async init() {
             this.initTheme();
-            // Confirm session is valid before showing the dashboard
             try {
                 await this.apiFetch('/auth/me');
             } catch (e) {
-                return; // apiFetch already redirects to /login on 401
+                return;
             }
             await Promise.all([
                 this.loadPage(),
@@ -62,7 +61,7 @@ function editor() {
 
         async logout() {
             try {
-                await fetch('/auth/logout', { method: 'POST' }); // with /auth prefix
+                await fetch('/auth/logout', { method: 'POST' });
             } catch (e) { }
             window.location.href = '/login';
         },
@@ -91,11 +90,8 @@ function editor() {
         },
 
         // ---------- page ----------
-        // Inside your editor.js component
-
         async loadPage() {
             try {
-                // 1. Fetch from /raw so the textarea gets raw Markdown, not rendered HTML
                 const res = await fetch('/api/page/raw');
                 if (res.ok) {
                     this.page = await res.json();
@@ -108,8 +104,7 @@ function editor() {
 
         async savePage() {
             try {
-                // 2. Use PUT because page ID 1 already exists (POST causes the 409 Conflict)
-                const res = await fetch('/api/page', {
+                await this.apiFetch('/api/page', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -119,20 +114,10 @@ function editor() {
                     })
                 });
 
-                if (res.ok) {
-                    this.pageStatus = 'Saved successfully!';
-                    this.pageStatusType = 'success';
-
-                    // CRITICAL: Do NOT set `this.page = await res.json()` here. 
-                    // The API response contains the rendered HTML, which would corrupt 
-                    // your markdown textarea. Keep your local markdown state as-is.
-                } else {
-                    const err = await res.json();
-                    this.pageStatus = err.detail || 'Error saving page';
-                    this.pageStatusType = 'error';
-                }
+                this.pageStatus = 'Saved successfully!';
+                this.pageStatusType = 'success';
             } catch (err) {
-                this.pageStatus = 'Network error';
+                this.pageStatus = err.message || 'Error saving page';
                 this.pageStatusType = 'error';
             }
         },
