@@ -18,7 +18,7 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
-router = APIRouter(tags=["Auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/token")
@@ -55,6 +55,12 @@ async def login_for_access_token(
     return {"message": "Login successful"}
 
 
-@router.get("/users/me/", response_model=UserOut)
+@router.get("/me/", response_model=UserOut)
 async def read_users_me(current_user: Annotated[UserOut, Depends(get_current_user)]):
     return current_user
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token")
+    return {"message": "Logged out"}

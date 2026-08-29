@@ -1,0 +1,132 @@
+body.editor {
+    max-width: none;
+    padding: 0;
+}
+
+body.editor label {
+    display: block;
+    margin: 0.5rem 0;
+}
+
+body.editor input[type="text"],
+body.editor input[type="url"],
+body.editor input[type="password"],
+body.editor textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+body.editor .actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+body.editor .actions button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+}
+
+body.editor .status {
+    margin-top: 0.5rem;
+}
+
+body.editor .status.success {
+    color: var(--success);
+}
+
+body.editor .status.error {
+    color: var(--error);
+}
+
+body.editor .preview {
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+body.editor .manage-item {
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+body.editor .manage-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+body.editor .manage-actions button {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sidebar nav button {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.sidebar nav button.active {
+    background: var(--active-bg);
+    color: var(--active-text);
+}
+
+.sidebar .logout {
+    margin-top: auto;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.focus-panel {
+    flex: 1;
+    padding: 2rem;
+    max-width: 700px;
+}

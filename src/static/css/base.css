@@ -1,0 +1,119 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #ffffff;
+    --text: #222222;
+    --border: #dddddd;
+    --pill-bg: #f0f0f0;
+    --pill-text: #222222;
+    --card-border: #dddddd;
+    --nav-text: #333333;
+    --link: #2563eb;
+    --link-hover: #1d4ed8;
+    --input-bg: #ffffff;
+    --success: #0a0;
+    --error: #a00;
+    --active-bg: #222222;
+    --active-text: #ffffff;
+}
+
+[data-theme="dark"] {
+    --bg: #181818;
+    --text: #e8e8e8;
+    --border: rgba(255, 255, 255, 0.15);
+    --pill-bg: #2a2a2a;
+    --pill-text: #ffffff;
+    --card-border: #333333;
+    --nav-text: #cccccc;
+    --link: #6ea8fe;
+    --link-hover: #9dc4ff;
+    --input-bg: #222222;
+    --success: #4ade80;
+    --error: #f87171;
+    --active-bg: #e8e8e8;
+    --active-text: #181818;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:visited {
+    color: var(--link);
+}
+
+a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    margin: 0 -1rem;
+    padding: 1rem;
+    transition: background 0.2s ease;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+nav a {
+    margin-left: 1.2rem;
+    color: var(--nav-text);
+}
+
+nav a:visited {
+    color: var(--nav-text);
+}
+
+nav a:hover {
+    color: var(--link);
+}
+
+nav button {
+    margin-left: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+section {
+    margin-bottom: 3.5rem;
+}
+
+h2 {
+    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
+}
+
+footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: var(--nav-text);
+    font-size: 0.85rem;
+}

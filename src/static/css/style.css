@@ -435,3 +435,60 @@ footer {
 .login-btn:hover {
   opacity: 0.9;
 }
+
+body.editor {
+  max-width: none;
+  padding: 0;
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar nav button {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sidebar nav button.active {
+  background: var(--active-bg);
+  color: var(--active-text);
+}
+
+.sidebar .logout {
+  margin-top: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.focus-panel {
+  flex: 1;
+  padding: 2rem;
+  max-width: 700px;
+}

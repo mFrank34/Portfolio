@@ -10,7 +10,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     errorDiv.style.display = 'none';
 
     try {
-        const response = await fetch('/token', {
+        const response = await fetch('/auth/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

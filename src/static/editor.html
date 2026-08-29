@@ -11,243 +11,166 @@
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
-  <link rel="stylesheet" href="/css/style.css?v=1.1" />
+  <link rel="stylesheet" href="/css/base.css?v=1" />
+  <link rel="stylesheet" href="/css/editor.css?v=1" />
   <script defer src="/js/theme.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="/js/vendor/marked.min.js"></script>
+  <script src="/js/vendor/purify.min.js"></script>
   <script src="/js/editor.js"></script>
 </head>
 
-<body class="editor" x-data="editor()">
-  <header>
-    <a href="/">← Back home</a>
-    <h1>Content Editor</h1>
-  </header>
+<body class="editor" x-data="editor()" x-init="init()">
+  <div class="dashboard">
+    <aside class="sidebar">
+      <a href="/" class="back-link">← Back home</a>
+      <nav>
+        <button :class="{active: section==='page'}" @click="section='page'">Page</button>
+        <button :class="{active: section==='blog'}" @click="section='blog'">Blog Posts</button>
+        <button :class="{active: section==='project'}" @click="section='project'">Projects</button>
+        <button :class="{active: section==='skills'}" @click="section='skills'">Skills</button>
+        <button :class="{active: section==='socials'}" @click="section='socials'">Socials</button>
+      </nav>
+      <button class="logout" @click="logout">Log out</button>
+    </aside>
 
-  <main>
-    <section class="controls">
-      <label>
-        Write Key
-        <input type="password" x-model="writeKey" placeholder="Enter write key" />
-      </label>
+    <main class="focus-panel">
 
-      <div class="tabs">
-        <button :class="{active: tab==='page'}" @click="tab='page'; loadPage()">Page</button>
-        <button :class="{active: tab==='blog'}" @click="tab='blog'">New Blog Post</button>
-        <button :class="{active: tab==='project'}" @click="tab='project'">New Project</button>
-        <button :class="{active: tab==='skills'}" @click="tab='skills'">Skills</button>
-        <button :class="{active: tab==='socials'}" @click="tab='socials'">Socials</button>
-        <button :class="{active: tab==='manage'}" @click="tab='manage'; loadManage()">Manage</button>
-      </div>
-    </section>
-
-    <section x-show="tab==='page'" class="form-section">
-      <h2>Front Page Content</h2>
-      <label>Hero Title
-        <input type="text" x-model="page.hero_title" placeholder="e.g. Frank" />
-      </label>
-      <label>Hero Subtitle
-        <input type="text" x-model="page.hero_subtitle" placeholder="e.g. Software developer" />
-      </label>
-      <label>Content (Markdown)
-        <textarea x-model="page.content" rows="12" placeholder="Write markdown here..."></textarea>
-      </label>
-
-      <div class="actions">
-        <button @click="savePage" :disabled="!canSubmitPage">Save</button>
-        <button @click="previewPage">Preview</button>
-      </div>
-
-      <p :class="['status', pageStatusType]" x-text="pageStatus"></p>
-
-      <template x-if="pagePreview">
-        <section class="preview">
-          <h3>Preview</h3>
-          <h4 x-text="page.hero_title"></h4>
-          <p x-text="page.hero_subtitle"></p>
-          <div x-html="pagePreview"></div>
-        </section>
-      </template>
-    </section>
-
-    <section x-show="tab==='blog'" class="form-section">
-      <h2>Create Blog Post</h2>
-      <label>Title
-        <input type="text" x-model="blog.title" placeholder="Post title" />
-      </label>
-      <label>Content (Markdown)
-        <textarea x-model="blog.content_md" rows="12" placeholder="Write markdown here..."></textarea>
-      </label>
-
-      <div class="actions">
-        <button @click="createBlog" :disabled="!canSubmitBlog">Publish</button>
-        <button @click="previewBlog">Preview</button>
-      </div>
-
-      <p :class="['status', blogStatusType]" x-text="blogStatus"></p>
-
-      <template x-if="blogPreview">
-        <section class="preview">
-          <h3>Preview</h3>
-          <div x-html="blogPreview"></div>
-        </section>
-      </template>
-    </section>
-
-    <section x-show="tab==='project'" class="form-section">
-      <h2>Create Project</h2>
-      <label>Title
-        <input type="text" x-model="project.title" placeholder="Project title" />
-      </label>
-      <label>Description
-        <textarea x-model="project.description" rows="6" placeholder="Short description"></textarea>
-      </label>
-      <label>Tech stack (comma separated)
-        <input type="text" x-model="project.tech_stack" placeholder="e.g. Python, FastAPI" />
-      </label>
-      <label>URL
-        <input type="url" x-model="project.url" placeholder="https://example.com" />
-      </label>
-
-      <div class="actions">
-        <button @click="createProject" :disabled="!canSubmitProject">Create Project</button>
-        <button @click="previewProject">Preview</button>
-      </div>
-
-      <p :class="['status', projectStatusType]" x-text="projectStatus"></p>
-
-      <template x-if="projectPreview">
-        <section class="preview">
-          <h3>Project Preview</h3>
-          <div>
-            <h4 x-text="project.title"></h4>
-            <div x-html="projectPreview"></div>
-            <div>
-              <template x-for="t in project.tech_stack.split(',').map(s => s.trim()).filter(Boolean)">
-                <span class="tag" x-text="t"></span>
-              </template>
-            </div>
-            <a :href="project.url" x-show="project.url" target="_blank" rel="noopener noreferrer">Visit →</a>
-          </div>
-        </section>
-      </template>
-    </section>
-
-    <section x-show="tab==='skills'" class="form-section">
-      <h2><span x-text="editingSkillId ? 'Edit Skill' : 'Add Skill'"></span></h2>
-      <label>Skill Name
-        <input type="text" x-model="newSkill" placeholder="e.g. TypeScript" required />
-      </label>
-      <label>Category (Optional)
-        <input type="text" x-model="newSkillCategory" placeholder="e.g. Frontend" />
-      </label>
-      <label>Level (Optional)
-        <input type="text" x-model="newSkillLevel" placeholder="e.g. Advanced" />
-      </label>
-
-      <div class="actions">
-        <button @click="saveSkill" :disabled="!newSkill.trim()"
-          x-text="editingSkillId ? 'Update Skill' : 'Add Skill'"></button>
-        <button x-show="editingSkillId" @click="cancelEditSkill()">Cancel</button>
-      </div>
-
-      <p :class="['status', skillsStatusType]" x-text="skillsStatus"></p>
-
-      <div class="manage-list" style="margin-top: 2rem;">
-        <h3>Manage Skills</h3>
-        <template x-for="s in skills" :key="s.id">
-          <div class="manage-item">
-            <div>
-              <strong x-text="s.name"></strong>
-              <span x-show="s.category" style="color: var(--nav-text); font-size: 0.85rem;"
-                x-text="' (' + s.category + ')'"></span>
-              <span x-show="s.level" style="color: var(--nav-text); font-size: 0.85rem;"
-                x-text="' — ' + s.level"></span>
-            </div>
-            <div class="manage-actions">
-              <button @click="startEditSkill(s)">Edit</button>
-              <button @click="deleteSkill(s.id)">Delete</button>
-            </div>
-          </div>
+      <!-- PAGE -->
+      <section x-show="section==='page'">
+        <h2>Front Page Content</h2>
+        <label>Hero Title <input type="text" x-model="page.hero_title" /></label>
+        <label>Hero Subtitle <input type="text" x-model="page.hero_subtitle" /></label>
+        <label>Content (Markdown)
+          <textarea x-model="page.content" rows="12"></textarea>
+        </label>
+        <div class="actions">
+          <button @click="savePage" :disabled="!canSubmitPage">Save</button>
+          <button @click="pagePreview = renderMarkdown(page.content)">Preview</button>
+        </div>
+        <p :class="['status', pageStatusType]" x-text="pageStatus"></p>
+        <template x-if="pagePreview">
+          <div class="preview" x-html="pagePreview"></div>
         </template>
-      </div>
-    </section>
+      </section>
 
-    <section x-show="tab==='socials'" class="form-section">
-      <h2><span x-text="editingSocialId ? 'Edit Social Link' : 'Add Social Link'"></span></h2>
-      <label>Site Name
-        <input type="text" x-model="newSite" placeholder="e.g. GitHub" required />
-      </label>
-      <label>URL
-        <input type="url" x-model="newLink" placeholder="https://github.com/..." required />
-      </label>
-      <label>Icon Identifier
-        <input type="text" x-model="newIcon" placeholder="e.g. github" required />
-      </label>
-
-      <div class="actions">
-        <button @click="saveSocial" :disabled="!newSite.trim() || !newLink.trim() || !newIcon.trim()">
-          <span x-text="editingSocialId ? 'Update Social Link' : 'Add Social Link'"></span>
-        </button>
-        <template x-if="editingSocialId">
-          <button @click="cancelEditSocial()">Cancel</button>
+      <!-- BLOG -->
+      <section x-show="section==='blog'">
+        <h2 x-text="editingBlogId ? 'Edit Post' : 'New Post'"></h2>
+        <label>Title <input type="text" x-model="blog.title" /></label>
+        <label>Content (Markdown)
+          <textarea x-model="blog.content_md" rows="12"></textarea>
+        </label>
+        <div class="actions">
+          <button @click="createBlog" :disabled="!canSubmitBlog" x-text="editingBlogId ? 'Update' : 'Publish'"></button>
+          <button @click="blogPreview = renderMarkdown(blog.content_md)">Preview</button>
+          <button x-show="editingBlogId" @click="cancelEditBlog()">Cancel</button>
+        </div>
+        <p :class="['status', blogStatusType]" x-text="blogStatus"></p>
+        <template x-if="blogPreview">
+          <div class="preview" x-html="blogPreview"></div>
         </template>
-      </div>
 
-      <p :class="['status', socialsStatusType]" x-text="socialsStatus"></p>
-
-      <div class="manage-list" style="margin-top: 2rem;">
-        <h3>Manage Social Links</h3>
-        <template x-for="s in socials" :key="s.id">
-          <div class="manage-item">
-            <div>
-              <strong x-text="s.site"></strong>
-              <span style="color: var(--nav-text); font-size: 0.85rem;" x-text="' (' + s.link + ')'"></span>
+        <h3>Existing Posts</h3>
+        <div class="manage-list">
+          <template x-for="p in posts" :key="p.id">
+            <div class="manage-item">
+              <span x-text="p.title"></span>
+              <div class="manage-actions">
+                <button @click="startEditBlog(p)">Edit</button>
+                <button @click="deleteBlog(p.id)">Delete</button>
+              </div>
             </div>
-            <div class="manage-actions">
-              <button @click="startEditSocial(s)">Edit</button>
-              <button @click="deleteSocial(s.id)">Delete</button>
+          </template>
+        </div>
+      </section>
+
+      <!-- PROJECT -->
+      <section x-show="section==='project'">
+        <h2 x-text="editingProjectId ? 'Edit Project' : 'New Project'"></h2>
+        <label>Title <input type="text" x-model="project.title" /></label>
+        <label>Description <textarea x-model="project.description" rows="6"></textarea></label>
+        <label>Tech stack (comma separated) <input type="text" x-model="project.tech_stack" /></label>
+        <label>URL <input type="url" x-model="project.url" /></label>
+        <div class="actions">
+          <button @click="createProject" :disabled="!canSubmitProject"
+            x-text="editingProjectId ? 'Update' : 'Create'"></button>
+          <button x-show="editingProjectId" @click="cancelEditProject()">Cancel</button>
+        </div>
+        <p :class="['status', projectStatusType]" x-text="projectStatus"></p>
+
+        <h3>Existing Projects</h3>
+        <div class="manage-list">
+          <template x-for="pr in projectsList" :key="pr.id">
+            <div class="manage-item">
+              <span x-text="pr.title"></span>
+              <div class="manage-actions">
+                <button @click="startEditProject(pr)">Edit</button>
+                <button @click="deleteProject(pr.id)">Delete</button>
+              </div>
             </div>
-          </div>
-        </template>
-      </div>
-    </section>
+          </template>
+        </div>
+      </section>
 
-    <section x-show="tab==='manage'" class="form-section">
-      <h2>Manage Content</h2>
-      <template x-if="manageError">
-        <p class="status error" x-text="JSON.stringify(manageError)"></p>
-      </template>
-      <h3>Projects</h3>
-      <div class="manage-list">
-        <template x-for="pr in projectsList" :key="pr.id">
-          <div class="manage-item">
-            <span x-text="pr.title"></span>
-            <div class="manage-actions">
-              <button @click="startEditProject(pr)">Edit</button>
-              <button @click="deleteProject(pr.id)">Delete</button>
+      <!-- SKILLS -->
+      <section x-show="section==='skills'">
+        <h2 x-text="editingSkillId ? 'Edit Skill' : 'Add Skill'"></h2>
+        <label>Name <input type="text" x-model="newSkill" /></label>
+        <label>Category <input type="text" x-model="newSkillCategory" /></label>
+        <label>Level <input type="text" x-model="newSkillLevel" /></label>
+        <div class="actions">
+          <button @click="saveSkill" :disabled="!newSkill.trim()" x-text="editingSkillId ? 'Update' : 'Add'"></button>
+          <button x-show="editingSkillId" @click="cancelEditSkill()">Cancel</button>
+        </div>
+        <p :class="['status', skillsStatusType]" x-text="skillsStatus"></p>
+
+        <h3>Existing Skills</h3>
+        <div class="manage-list">
+          <template x-for="s in skills" :key="s.id">
+            <div class="manage-item">
+              <span>
+                <strong x-text="s.name"></strong>
+                <span x-show="s.category" x-text="' (' + s.category + ')'"></span>
+              </span>
+              <div class="manage-actions">
+                <button @click="startEditSkill(s)">Edit</button>
+                <button @click="deleteSkill(s.id)">Delete</button>
+              </div>
             </div>
-          </div>
-        </template>
-      </div>
+          </template>
+        </div>
+      </section>
 
-      <h3>Blog Posts</h3>
-      <div class="manage-list">
-        <template x-for="p in posts" :key="p.id">
-          <div class="manage-item">
-            <span x-text="p.title"></span>
-            <div class="manage-actions">
-              <button @click="startEditBlog(p)">Edit</button>
-              <button @click="deleteBlog(p.id)">Delete</button>
+      <!-- SOCIALS -->
+      <section x-show="section==='socials'">
+        <h2 x-text="editingSocialId ? 'Edit Social' : 'Add Social'"></h2>
+        <label>Site <input type="text" x-model="newSite" /></label>
+        <label>URL <input type="url" x-model="newLink" /></label>
+        <label>Icon <input type="text" x-model="newIcon" /></label>
+        <div class="actions">
+          <button @click="saveSocial" :disabled="!newSite.trim() || !newLink.trim() || !newIcon.trim()"
+            x-text="editingSocialId ? 'Update' : 'Add'"></button>
+          <button x-show="editingSocialId" @click="cancelEditSocial()">Cancel</button>
+        </div>
+        <p :class="['status', socialsStatusType]" x-text="socialsStatus"></p>
+
+        <h3>Existing Socials</h3>
+        <div class="manage-list">
+          <template x-for="s in socials" :key="s.id">
+            <div class="manage-item">
+              <span x-text="s.site"></span>
+              <div class="manage-actions">
+                <button @click="startEditSocial(s)">Edit</button>
+                <button @click="deleteSocial(s.id)">Delete</button>
+              </div>
             </div>
-          </div>
-        </template>
-      </div>
+          </template>
+        </div>
+      </section>
 
-
-    </section>
-  </main>
+    </main>
+  </div>
 </body>
 
 </html>
