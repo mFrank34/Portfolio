@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +16,14 @@ router = APIRouter(prefix="/api/page", tags=["Page"])
 async def get_page(db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:
-        raise HTTPException(status_code=404, detail="Page not found")
+        return PageOut(
+            id=1,
+            hero_title="",
+            hero_subtitle="",
+            content="",
+            created_at=None,
+            updated_at=None,
+        )
 
     return PageOut(
         id=page.id,
@@ -30,7 +39,14 @@ async def get_page(db: AsyncSession = Depends(get_db)):
 async def get_page_raw(db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:
-        raise HTTPException(status_code=404, detail="Page not found")
+        return PageOut(
+            id=1,
+            hero_title="",
+            hero_subtitle="",
+            content="",
+            created_at=None,
+            updated_at=None,
+        )
 
     return PageOut(
         id=page.id,

@@ -1,6 +1,14 @@
 function editor() {
     return {
-        ...themeMixin(),
+        theme: localStorage.getItem('theme') || 'dark',
+        initTheme() {
+            document.documentElement.setAttribute('data-theme', this.theme);
+        },
+        toggleTheme() {
+            this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', this.theme);
+            document.documentElement.setAttribute('data-theme', this.theme);
+        },
 
         section: 'page',
 
@@ -72,7 +80,6 @@ function editor() {
                 throw new Error('Not authenticated');
             }
 
-            // Safely handle text/HTML error responses if backend crashes
             let data = {};
             const contentType = res.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
@@ -101,7 +108,7 @@ function editor() {
         // ---------- page ----------
         async loadPage() {
             try {
-                this.page = await this.apiFetch('/api/page/raw');
+                this.page = await this.apiFetch('/api/page');
             } catch (err) {
                 this.pageStatus = 'Failed to load page: ' + err.message;
                 this.pageStatusType = 'error';
