@@ -1,5 +1,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
+
+from datetime import datetime, timezone
+
 from portfolio.config import settings
 
 engine = create_async_engine(
@@ -21,3 +24,7 @@ async def get_db():
         except Exception:
             await session.rollback()
             raise
+
+
+def utcnow_naive() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
