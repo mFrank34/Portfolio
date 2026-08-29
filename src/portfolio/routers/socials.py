@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from portfolio.auth import require_key
+from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.social import Social
 from portfolio.schema.social import SocialIn, SocialOut
@@ -16,7 +16,7 @@ async def list_socials(db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
-@router.post("", response_model=SocialOut, dependencies=[Depends(require_key)])
+@router.post("", response_model=SocialOut, dependencies=[Depends(get_current_user)])
 async def create_social(payload: SocialIn, db: AsyncSession = Depends(get_db)):
     new_social = Social(site=payload.site, link=payload.link, icon=payload.icon)
 
@@ -27,7 +27,7 @@ async def create_social(payload: SocialIn, db: AsyncSession = Depends(get_db)):
 
 
 @router.put(
-    "/{social_id}", response_model=SocialOut, dependencies=[Depends(require_key)]
+    "/{social_id}", response_model=SocialOut, dependencies=[Depends(get_current_user)]
 )
 async def update_social(
     social_id: int,
@@ -48,7 +48,7 @@ async def update_social(
     return social
 
 
-@router.delete("/{social_id}", dependencies=[Depends(require_key)])
+@router.delete("/{social_id}", dependencies=[Depends(get_current_user)])
 async def delete_social(social_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Social).where(Social.id == social_id))
     social = result.scalar_one_or_none()

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from portfolio.auth import require_key
+from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.blog import Blog
 from portfolio.schema.blog import BlogIn, BlogOut
@@ -77,7 +77,7 @@ async def get_post(slug: str, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.post("", response_model=BlogOut, dependencies=[Depends(require_key)])
+@router.post("", response_model=BlogOut, dependencies=[Depends(get_current_user)])
 async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
     base_slug = make_slug(payload.title)
     slug = await get_unique_slug(db, base_slug)
@@ -101,7 +101,7 @@ async def create_post(payload: BlogIn, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.put("/{post_id}", response_model=BlogOut, dependencies=[Depends(require_key)])
+@router.put("/{post_id}", response_model=BlogOut, dependencies=[Depends(get_current_user)])
 async def update_blog(
     post_id: int, payload: BlogIn, db: AsyncSession = Depends(get_db)
 ):
@@ -132,7 +132,7 @@ async def update_blog(
     )
 
 
-@router.delete("/{post_id}", dependencies=[Depends(require_key)])
+@router.delete("/{post_id}", dependencies=[Depends(get_current_user)])
 async def delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog).where(Blog.id == post_id))
     blog = result.scalar_one_or_none()

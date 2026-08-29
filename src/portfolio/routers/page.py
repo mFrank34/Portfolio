@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from portfolio.auth import require_key
+from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.page import Page
 from portfolio.schema.page import PageIn, PageOut
@@ -43,7 +43,7 @@ async def get_page_raw(db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.post("", response_model=PageOut, dependencies=[Depends(require_key)])
+@router.post("", response_model=PageOut, dependencies=[Depends(get_current_user)])
 async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     existing = await db.get(Page, 1)
     if existing is not None:
@@ -69,7 +69,7 @@ async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.put("", response_model=PageOut, dependencies=[Depends(require_key)])
+@router.put("", response_model=PageOut, dependencies=[Depends(get_current_user)])
 async def update_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:
