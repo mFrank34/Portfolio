@@ -94,31 +94,45 @@ function editor() {
         // Inside your editor.js component
 
         async loadPage() {
-            // Use the /raw endpoint so the textarea gets raw Markdown, not rendered HTML
-            const res = await fetch('/api/page/raw');
-            if (res.ok) {
-                this.page = await res.json();
+            try {
+                // 1. Fetch from /raw so the textarea gets raw Markdown, not rendered HTML
+                const res = await fetch('/api/page/raw');
+                if (res.ok) {
+                    this.page = await res.json();
+                }
+            } catch (err) {
+                this.pageStatus = 'Failed to load page';
+                this.pageStatusType = 'error';
             }
         },
 
         async savePage() {
-            // Use PUT because page ID 1 already exists (POST creates a new one and causes the 409 error)
-            const res = await fetch('/api/page', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    hero_title: this.page.hero_title,
-                    hero_subtitle: this.page.hero_subtitle,
-                    content: this.page.content
-                })
-            });
+            try {
+                // 2. Use PUT because page ID 1 already exists (POST causes the 409 Conflict)
+                const res = await fetch('/api/page', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        hero_title: this.page.hero_title,
+                        hero_subtitle: this.page.hero_subtitle,
+                        content: this.page.content
+                    })
+                });
 
-            if (res.ok) {
-                this.pageStatus = 'Saved successfully!';
-                this.pageStatusType = 'success';
-            } else {
-                const err = await res.json();
-                this.pageStatus = err.detail || 'Error saving page';
+                if (res.ok) {
+                    this.pageStatus = 'Saved successfully!';
+                    this.pageStatusType = 'success';
+
+                    // CRITICAL: Do NOT set `this.page = await res.json()` here. 
+                    // The API response contains the rendered HTML, which would corrupt 
+                    // your markdown textarea. Keep your local markdown state as-is.
+                } else {
+                    const err = await res.json();
+                    this.pageStatus = err.detail || 'Error saving page';
+                    this.pageStatusType = 'error';
+                }
+            } catch (err) {
+                this.pageStatus = 'Network error';
                 this.pageStatusType = 'error';
             }
         },
