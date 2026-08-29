@@ -63,5 +63,9 @@ async def project_page():
 async def admin_page():
     return FileResponse(os.path.join(STATIC_DIR, "editor.html"))
 
+@app.get("/favicon.ico")
+async def get_icon():
+    return FileResponse(os.path.join(STATIC_DIR, "assets/favicon.ico"))
+
 
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
