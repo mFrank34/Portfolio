@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,20 +8,23 @@ from portfolio.auth import authenticate_user, create_access_token, get_current_u
 from portfolio.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from portfolio.database import get_db
 from portfolio.model.user import User
-
-from portfolio.schema.auth import User
-
-router = APIRouter(tags=["Auth"])
-
+from portfolio.schema.auth import UserOut
+from portfolio.limiter import limiter
+from portfolio.config import settings
 
 from fastapi import Response, status, HTTPException, Depends
+
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
+router = APIRouter(tags=["Auth"])
+
 
 @router.post("/token")
+@limiter.limit("5/minute")
 async def login_for_access_token(
+    request: Request,  # <-- add this
     response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db),
@@ -44,14 +47,14 @@ async def login_for_access_token(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=False,  # Set to True when you deploy with HTTPS
-        samesite="lax",
+        secure=settings.environment == "production",
+        samesite="strict",
         max_age=int(access_token_expires.total_seconds()),
     )
 
     return {"message": "Login successful"}
 
 
-@router.get("/users/me/", response_model=User)
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+@router.get("/users/me/", response_model=UserOut)
+async def read_users_me(current_user: Annotated[UserOut, Depends(get_current_user)]):
     return current_user

@@ -1,5 +1,6 @@
 # Environment variables (contains WRITE_KEY, DATABASE_URL, etc.)
 .env
+.git
 
 # Python
 __pycache__/

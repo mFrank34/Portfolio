@@ -11,7 +11,6 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite+aiosqlite:///./portfolio.db"
     sql_echo: bool = False
-    cors_origins: list[str] = ["http://localhost:8000"]
     environment: str = "development"
 
     model_config = SettingsConfigDict(

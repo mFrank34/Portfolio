@@ -11,7 +11,6 @@ router = APIRouter(prefix="/api/page", tags=["Page"])
 
 
 @router.get("", response_model=PageOut)
-@router.get("", response_model=PageOut)
 async def get_page(db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:

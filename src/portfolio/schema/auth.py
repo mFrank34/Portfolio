@@ -10,12 +10,12 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
-class User(BaseModel):
+class UserOut(BaseModel):
     id: int
     username: str
 
 
-class UserInDB(User):
+class UserInDB(UserOut):
     hashed_password: str
 
 
