@@ -42,41 +42,21 @@ async def get_page_raw(db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.post("", response_model=PageOut, dependencies=[Depends(get_current_user)])
-async def create_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
-    existing = await db.get(Page, 1)
-    if existing is not None:
-        raise HTTPException(status_code=409, detail="Page already exists")
-
-    page = Page(
-        id=1,
-        hero_title=payload.hero_title,
-        hero_subtitle=payload.hero_subtitle,
-        content=payload.content,
-    )
-    db.add(page)
-    await db.commit()
-    await db.refresh(page)
-
-    return PageOut(
-        id=page.id,
-        hero_title=page.hero_title,
-        hero_subtitle=page.hero_subtitle,
-        content=render_html(page.content),
-        created_at=page.created_at,
-        updated_at=page.updated_at,
-    )
-
-
 @router.put("", response_model=PageOut, dependencies=[Depends(get_current_user)])
 async def update_page(payload: PageIn, db: AsyncSession = Depends(get_db)):
     page = await db.get(Page, 1)
     if page is None:
-        raise HTTPException(status_code=404, detail="Page not found")
-
-    page.hero_title = payload.hero_title
-    page.hero_subtitle = payload.hero_subtitle
-    page.content = payload.content
+        page = Page(
+            id=1,
+            hero_title=payload.hero_title,
+            hero_subtitle=payload.hero_subtitle,
+            content=payload.content,
+        )
+        db.add(page)
+    else:
+        page.hero_title = payload.hero_title
+        page.hero_subtitle = payload.hero_subtitle
+        page.content = payload.content
 
     await db.commit()
     await db.refresh(page)
