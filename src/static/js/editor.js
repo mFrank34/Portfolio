@@ -5,7 +5,6 @@ function editor() {
         section: 'page',
 
         page: { hero_title: '', hero_subtitle: '', content: '' },
-        pageExists: false,
         pageStatus: '', pageStatusType: '', pagePreview: '',
 
         blog: { title: '', content_md: '' },
@@ -72,11 +71,21 @@ function editor() {
                 window.location.href = '/login';
                 throw new Error('Not authenticated');
             }
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.detail || res.statusText || `HTTP ${res.status}`);
+
+            // Safely handle text/HTML error responses if backend crashes
+            let data = {};
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json().catch(() => ({}));
+            } else {
+                const text = await res.text().catch(() => '');
+                data = { detail: text || res.statusText };
             }
-            return res.status === 204 ? null : res.json();
+
+            if (!res.ok) {
+                throw new Error(data.detail || data.message || `HTTP ${res.status}`);
+            }
+            return res.status === 204 ? null : data;
         },
 
         renderMarkdown(md) {
@@ -92,12 +101,9 @@ function editor() {
         // ---------- page ----------
         async loadPage() {
             try {
-                const res = await fetch('/api/page/raw');
-                if (res.ok) {
-                    this.page = await res.json();
-                }
+                this.page = await this.apiFetch('/api/page/raw');
             } catch (err) {
-                this.pageStatus = 'Failed to load page';
+                this.pageStatus = 'Failed to load page: ' + err.message;
                 this.pageStatusType = 'error';
             }
         },
@@ -133,7 +139,7 @@ function editor() {
                 const raw = await this.apiFetch(`/api/blog/${post.id}/raw`);
                 this.blog.content_md = raw.content_md || '';
             } catch (e) {
-                this.setStatus('blog', 'Failed to load post content', 'error');
+                this.setStatus('blog', 'Failed to load post content: ' + e.message, 'error');
             }
         },
         cancelEditBlog() {
