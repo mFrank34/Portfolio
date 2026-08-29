@@ -108,7 +108,7 @@ function editor() {
         // ---------- page ----------
         async loadPage() {
             try {
-                this.page = await this.apiFetch('/api/page');
+                this.page = await this.apiFetch('/api/page/raw');
             } catch (err) {
                 this.pageStatus = 'Failed to load page: ' + err.message;
                 this.pageStatusType = 'error';
