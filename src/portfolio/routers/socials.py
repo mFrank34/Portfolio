@@ -18,7 +18,7 @@ async def list_socials(db: AsyncSession = Depends(get_db)):
 
 @router.post("", response_model=SocialOut, dependencies=[Depends(get_current_user)])
 async def create_social(payload: SocialIn, db: AsyncSession = Depends(get_db)):
-    new_social = Social(site=payload.site, link=payload.link, icon=payload.icon)
+    new_social = Social(site=payload.site, link=str(payload.link), icon=payload.icon)
 
     db.add(new_social)
     await db.commit()
@@ -39,9 +39,9 @@ async def update_social(
     if not social:
         raise HTTPException(status_code=404, detail="Social not found")
 
-    social.site = payload.site # pyright: ignore[reportAttributeAccessIssue]
-    social.link = payload.link # pyright: ignore[reportAttributeAccessIssue]
-    social.icon = payload.icon # pyright: ignore[reportAttributeAccessIssue]
+    social.site = payload.site  # pyright: ignore[reportAttributeAccessIssue]
+    social.link = str(payload.link)  # pyright: ignore[reportAttributeAccessIssue]
+    social.icon = payload.icon  # pyright: ignore[reportAttributeAccessIssue]
 
     await db.commit()
     await db.refresh(social)
