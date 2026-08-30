@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./portfolio.db"
     sql_echo: bool = False
     environment: str = "development"
+    debug: bool
 
     model_config = SettingsConfigDict(
         env_file="./.env",

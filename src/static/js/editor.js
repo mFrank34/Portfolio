@@ -285,8 +285,16 @@ function editor() {
             this.editingSocialId = null;
             this.newSite = ''; this.newLink = ''; this.newIcon = '';
         },
+        
         async saveSocial() {
             if (!this.newSite.trim() || !this.newLink.trim() || !this.newIcon.trim()) return;
+
+            try { new URL(this.newLink); }
+            catch (e) {
+                this.setStatus('socials', 'Error: link must be a full URL (e.g. https://...)', 'error');
+                return;
+            }
+
             const isEdit = Boolean(this.editingSocialId);
             try {
                 await this.apiFetch(isEdit ? `/api/socials/${this.editingSocialId}` : '/api/socials', {
@@ -301,6 +309,7 @@ function editor() {
                 this.setStatus('socials', 'Error: ' + e.message, 'error');
             }
         },
+
         async deleteSocial(id) {
             if (!confirm('Delete this social link?')) return;
             try {
