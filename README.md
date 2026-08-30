@@ -2,7 +2,7 @@
 
 A small personal portfolio backend and static site built with FastAPI and SQLAlchemy (async). This project serves a static frontend (in src/static) and exposes a JSON API for managing projects, skills and blog posts. It uses an async SQLAlchemy engine with a configurable database URL and a simple write-key based protection for mutating operations.
 
-Come Checkout the Live Version ![Link](https://www.frankslab.uk/)
+Come Checkout the Live Version [Link](https://www.frankslab.uk/)
 
 ## Key features
 
