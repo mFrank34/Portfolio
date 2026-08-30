@@ -65,6 +65,11 @@
     margin-top: 0.5rem;
 }
 
+article a {
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
 .skills-list {
     display: flex;
     flex-wrap: wrap;
@@ -101,10 +106,16 @@
     color: var(--link-hover);
 }
 
+.socials-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 .socials-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     padding: 0.4rem 0.9rem;
     border-radius: 999px;
     border: 1px solid var(--border);
