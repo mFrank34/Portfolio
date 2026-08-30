@@ -99,9 +99,9 @@ async def blog_post_page(slug: str, db: AsyncSession = Depends(get_db)):
     return _serve_static_file("blog.html")
 
 
-@app.get("/project/{project_id}")
-async def project_page(project_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Project.id).where(Project.id == project_id))
+@app.get("/project/{slug}")
+async def project_page(slug: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Project.id).where(Project.slug == slug))
     if result.scalar_one_or_none() is None:
         raise HTTPException(status_code=404, detail="Project not found")
     return _serve_static_file("project.html")
