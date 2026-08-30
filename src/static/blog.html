@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Blog Post</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script>
     (function () {
       const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -15,6 +16,7 @@
   <script src="/js/theme.js"></script>
   <script src="/js/blog.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body x-data="blogPostApp()">

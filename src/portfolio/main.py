@@ -1,19 +1,26 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+
 from pwdlib import PasswordHash
+
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.config import settings
-from portfolio.database import Base, async_session, engine
+from portfolio.auth import get_token_from_cookie, get_current_user
+from portfolio.database import Base, async_session, engine, get_db
 from portfolio.limiter import limiter
 from portfolio.model.user import User
+from portfolio.model.blog import Blog
+from portfolio.model.project import Project
 from portfolio.routers import auth, blogs, page, projects, skills, socials
 
 password_hash = PasswordHash.recommended()
@@ -72,18 +79,37 @@ def _serve_static_file(filename: str) -> FileResponse:
     return FileResponse(file_path)
 
 
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: HTTPException):
+    if request.url.path.startswith("/api"):
+        return JSONResponse(status_code=404, content={"detail": exc.detail})
+    return _serve_static_file("404.html")
+
+
 @app.get("/blog/{slug}")
-async def blog_post_page():
+async def blog_post_page(slug: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Blog.id).where(Blog.slug == slug))
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail="Post not found")
     return _serve_static_file("blog.html")
 
 
 @app.get("/project/{project_id}")
-async def project_page():
+async def project_page(project_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Project.id).where(Project.id == project_id))
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail="Project not found")
     return _serve_static_file("project.html")
 
 
 @app.get("/admin")
-async def admin_page():
+async def admin_page(request: Request):
+    try:
+        token = await get_token_from_cookie(request)
+        async with async_session() as db:
+            await get_current_user(token, db)
+    except HTTPException:
+        return RedirectResponse(url="/login")
     return _serve_static_file("editor.html")
 
 
