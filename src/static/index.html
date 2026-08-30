@@ -121,11 +121,11 @@
 
   <div id="storage-notice" x-data="{ show: !localStorage.getItem('storageNoticeSeen') }" x-show="show" x-cloak>
     <p>
-      This site stores a small preference (light/dark mode) in your browser's local storage.
-      No tracking, no cookies sent to a server.
-      <button @click="show = false; localStorage.setItem('storageNoticeSeen', '1')">Got it</button>
+        This site stores a small preference (light/dark mode) in your browser's local storage.
+        No tracking, no cookies sent to a server.
+        <button @click="show = false; localStorage.setItem('storageNoticeSeen', '1')">Got it</button>
     </p>
-  </div>
+</div>
 
   <footer>
     <p x-show="page?.updated_at">Last updated: <span x-text="formattedUpdatedAt"></span></p>
