@@ -18,7 +18,7 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 
 @router.post("/token")

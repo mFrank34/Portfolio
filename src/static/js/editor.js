@@ -38,7 +38,7 @@ function editor() {
         async init() {
             this.initTheme();
             try {
-                await this.apiFetch('/auth/me');
+                await this.apiFetch('/api/auth/me');
             } catch (e) {
                 return;
             }
@@ -68,7 +68,7 @@ function editor() {
 
         async logout() {
             try {
-                await fetch('/auth/logout', { method: 'POST' });
+                await fetch('/api/auth/logout', { method: 'POST' });
             } catch (e) { }
             window.location.href = '/login';
         },
