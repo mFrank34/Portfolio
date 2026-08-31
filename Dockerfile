@@ -33,4 +33,4 @@ USER appuser
 EXPOSE 8000
 
 # src-layout project: app lives at src/portfolio/main.py
-CMD ["uvicorn", "portfolio.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "portfolio.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*"]

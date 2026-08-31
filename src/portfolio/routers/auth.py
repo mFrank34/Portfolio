@@ -47,7 +47,7 @@ async def login_for_access_token(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=settings.environment == "production",
+         secure=request.url.scheme == "https",
         samesite="strict",
         max_age=int(access_token_expires.total_seconds()),
     )
