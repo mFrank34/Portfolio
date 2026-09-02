@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ALGORITHM = "HS256"
@@ -20,6 +21,14 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
+
+    @field_validator("database_url")
+    @classmethod
+    def normalize_database_url(cls, v: str) -> str:
+        for prefix in ("postgresql://", "postgres://"):
+            if v.startswith(prefix):
+                return "postgresql+asyncpg://" + v[len(prefix):]
+        return v
 
 
 settings = Settings()
