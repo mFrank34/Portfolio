@@ -9,7 +9,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com; "
             "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https://cdn.simpleicons.org https://img.icons8.com;"
+            "img-src 'self' data: https://cdn.simpleicons.org https://img.icons8.com https://raw.githubusercontent.com;"
         )
         response.headers["Strict-Transport-Security"] = (
             "max-age=63072000; includeSubDomains; preload"
