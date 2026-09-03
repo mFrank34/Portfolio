@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,8 +13,8 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite+aiosqlite:///./portfolio.db"
     sql_echo: bool = False
-    environment: str = "development"
-    debug: bool
+    environment: Literal["development", "staging", "production"] = "development"
+    debug: bool = False
 
     model_config = SettingsConfigDict(
         env_file="./.env",

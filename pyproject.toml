@@ -1,12 +1,12 @@
 [project]
 name = "portfolio"
 version = "0.1.0"
-description = "Add your description here"
+description = "A personal portfolio website built with FastAPI, SQLAlchemy, and Pydantic."
 readme = "README.md"
 authors = [
     { name = "Michael Franks", email = "mffranks@pm.me" }
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "aiosqlite>=0.22.1",
     "asyncmy>=0.2.14",
