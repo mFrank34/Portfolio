@@ -4,6 +4,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "uv run hypercorn src.portfolio.main:app --bind \"[::]:$PORT\""
+    "startCommand": "uv run uvicorn src.portfolio.main:app --host 0.0.0.0 --port $PORT"
   }
 }
