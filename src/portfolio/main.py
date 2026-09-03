@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from pwdlib import PasswordHash
@@ -16,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from portfolio.config import settings
 from portfolio.auth import get_token_from_cookie, get_current_user
+from portfolio.headers import SecurityHeadersMiddleware
 from portfolio.database import Base, async_session, engine, get_db
 from portfolio.limiter import limiter
 from portfolio.model.user import User
@@ -67,6 +69,9 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(SecurityHeadersMiddleware)
+
 app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(page.router)
