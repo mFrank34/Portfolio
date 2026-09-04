@@ -1,4 +1,4 @@
-from fastapi import HTTPExceptionm 
+from fastapi import HTTPException
 import os
 
 from fastapi.responses import FileResponse
