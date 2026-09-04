@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.concurrency import asynccontextmanager
+from contextlib import asynccontextmanager
 
 from sqlalchemy import engine
 from sqlalchemy import select
