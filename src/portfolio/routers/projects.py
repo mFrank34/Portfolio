@@ -8,7 +8,7 @@ from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.project import Project
 from portfolio.schema.project import ProjectIn, ProjectOut
-from portfolio.shared.slug import make_slug
+from portfolio.core.slug import make_slug
 
 router = APIRouter(prefix="/api/project", tags=["Projects"])
 

@@ -1,9 +1,14 @@
 from typing import Literal
+import os
+
+from pwdlib import PasswordHash
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+PASSWORD_HASH = PasswordHash.recommended()
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "../static")
 
 
 class Settings(BaseSettings):
@@ -28,7 +33,7 @@ class Settings(BaseSettings):
     def normalize_database_url(cls, v: str) -> str:
         for prefix in ("postgresql://", "postgres://"):
             if v.startswith(prefix):
-                return "postgresql+asyncpg://" + v[len(prefix):]
+                return "postgresql+asyncpg://" + v[len(prefix) :]
         return v
 
 

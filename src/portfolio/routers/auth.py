@@ -9,7 +9,7 @@ from portfolio.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from portfolio.database import get_db
 from portfolio.model.user import User
 from portfolio.schema.auth import UserOut
-from portfolio.limiter import limiter
+from portfolio.core.limiter import limiter
 from portfolio.config import settings
 
 from fastapi import Response, status, HTTPException, Depends

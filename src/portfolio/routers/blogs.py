@@ -6,8 +6,8 @@ from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.blog import Blog
 from portfolio.schema.blog import BlogIn, BlogOut
-from portfolio.shared.slug import make_slug
-from portfolio.shared.render import render_html
+from portfolio.core.slug import make_slug
+from portfolio.core.render import render_html
 
 router = APIRouter(prefix="/api/blog", tags=["Blogs"])
 
