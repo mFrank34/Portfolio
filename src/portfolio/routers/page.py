@@ -7,7 +7,7 @@ from portfolio.auth import get_current_user
 from portfolio.database import get_db
 from portfolio.model.page import Page
 from portfolio.schema.page import PageIn, PageOut
-from portfolio.shared.render import render_html
+from portfolio.core.render import render_html
 
 router = APIRouter(prefix="/api/page", tags=["Page"])
 

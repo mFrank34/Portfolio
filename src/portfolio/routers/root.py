@@ -12,7 +12,7 @@ from portfolio.database import get_db, async_session
 from portfolio.model.blog import Blog
 from portfolio.model.project import Project
 from portfolio.auth import get_current_user, get_token_from_cookie
-from portfolio.shared.static_file import _serve_static_file
+from portfolio.core.static_file import _serve_static_file
 from portfolio.config import STATIC_DIR
 
 router = APIRouter(tags=["Root"])

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
-from portfolio.shared.static_file import _serve_static_file
+from portfolio.core.static_file import _serve_static_file
 
 
 async def not_found_handler(request: Request, exc: HTTPException):
